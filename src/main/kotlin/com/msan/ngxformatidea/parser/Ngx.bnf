@@ -1,0 +1,10 @@
+{
+  parserClass = "com.example.ngx.parser.NgxParser"
+  extends = "com.intellij.lang.parser.GeneratedParserUtilBase"
+}
+
+file ::= component*
+
+component ::= "[component]" content? "[/component]"
+
+content ::= TEXT
