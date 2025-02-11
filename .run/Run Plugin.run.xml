@@ -12,7 +12,7 @@
       <option name="taskNames">
         <list>
           <option value="runIde" />
-          <option value="--args=&quot;$PROJECT_DIR$/../zupit&quot;" />
+          <option value="--args=&quot;$PROJECT_DIR$/../ngx-test&quot;" />
         </list>
       </option>
       <option name="vmOptions" value="" />

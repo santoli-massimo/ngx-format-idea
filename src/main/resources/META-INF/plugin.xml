@@ -8,7 +8,7 @@
     <name>Ngx-format-idea</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="support@yourcompany.com" url="https://www.yourcompany.com">YourCompany</vendor>
+    <vendor email="supporto@yourcompany.com" url="https://www.yourcompanyo.com">YourCompanyo</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
@@ -25,11 +25,23 @@
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <fileType
+                name="Ngx File"
+                implementationClass="com.msan.ngxformatidea.psi.NgxFileType"
+                fieldName="INSTANCE"
+                language="Ngx"
+                extensions="ngx"
+        />
+        <lang.parserDefinition
+                language="Ngx"
+                implementationClass="com.msan.ngxformatidea.grammar.NgxParserDefinition"
+        />
+<!--        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxHtmlInjector"/>-->
         <treeStructureProvider implementation="com.msan.ngxformatidea.AngularTreeStructureProvider"/>
-        <fileIconProvider implementation="com.msan.ngxformatidea.utils.NgxFileIconProvider"/>
-<!--        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxMultiHostInjector"/>-->
+        <lang.syntaxHighlighterFactory language="Ngx" implementationClass="com.msan.ngxformatidea.highlighting.NgxSyntaxHighlighterFactory"/>
 
-        <fileType name="Ngx File" language="NGX" implementationClass="com.msan.ngxformatidea.language.NgxFileType"/>
-        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxHtmlInjector"/>
+        <!--        <lang.parserDefinition language="Ngx" implementationClass="com.msan.ngxformatidea.NgxParserDefinition"/>-->
+<!--        <fileIconProvider implementation="com.msan.ngxformatidea.utils.NgxFileIconProvider"/>-->
+<!--        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxMultiHostInjector"/>-->
     </extensions>
 </idea-plugin>

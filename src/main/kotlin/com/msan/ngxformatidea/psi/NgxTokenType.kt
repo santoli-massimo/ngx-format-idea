@@ -4,4 +4,8 @@ import com.intellij.psi.tree.IElementType
 import com.msan.ngxformatidea.language.NgxLanguage
 
 
-class NgxTokenType(debugName: String) : IElementType(debugName, NgxLanguage)
+class NgxTokenType(debugName: String) : IElementType(debugName, NgxLanguage.INSTANCE){
+    override fun toString(): String {
+        return "NgxTokenType." + super.toString()
+    }
+}

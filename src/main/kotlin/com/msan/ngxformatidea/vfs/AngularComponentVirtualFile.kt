@@ -1,13 +1,11 @@
 package com.msan.ngxformatidea.vfs
 
-import com.intellij.openapi.fileTypes.PlainTextLanguage
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
 import com.intellij.testFramework.LightVirtualFile
-import com.msan.ngxformatidea.language.NgxFileType
 import com.msan.ngxformatidea.language.NgxLanguage
 
 val tsExtension = FileTypeManager.getInstance().getFileTypeByExtension("ts")
@@ -23,7 +21,7 @@ class NgxVirtualFile(
 //) : LightVirtualFile(fileName, HTMLLanguage.INSTANCE, "") {
 //) : LightVirtualFile(fileName, PlainTextLanguage.INSTANCE, "") {
 //) : LightVirtualFile(fileName, NgxLanguage, "") {
-) : LightVirtualFile(fileName, NgxFileType.INSTANCE, "") {
+) : LightVirtualFile(fileName, NgxLanguage.INSTANCE, "") {
 
     public val ngxPsiFile: PsiFile? by lazy { PsiManager.getInstance(project).findFile(this) }
     init {

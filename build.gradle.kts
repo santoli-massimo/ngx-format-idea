@@ -2,6 +2,7 @@ plugins {
     id("java")
     id("org.jetbrains.kotlin.jvm") version "1.9.25"
     id("org.jetbrains.intellij") version "1.17.4"
+    id("org.jetbrains.grammarkit") version "2022.3.2.2"
 }
 
 group = "com.msan"
@@ -9,6 +10,14 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs("src/main/gen")
+        }
+    }
 }
 
 // Configure Gradle IntelliJ Plugin
@@ -19,10 +28,35 @@ intellij {
 
 //    plugins.set(listOf(/* Plugin Dependencies */))
     plugins.set(listOf("org.intellij.intelliLang"))
+
 }
 
 
 tasks {
+//    buildSearchableOptions {
+//        enabled = false
+//    }
+
+    generateParser {
+        sourceFile.set(file("src/main/kotlin/com/msan/ngxformatidea/grammar/NgxParser.bnf"))
+        pathToParser.set("gen/com/msan/ngxformatidea/grammar/NgxParser.java")
+        pathToPsiRoot.set("psi")
+        targetRootOutputDir.set(file("src/main/gen/"))
+        purgeOldFiles.set(false)
+    }
+
+    generateLexer {
+        sourceFile.set(file("src/main/kotlin/com/msan/ngxformatidea/grammar/_NgxLexer.flex"))
+        targetOutputDir.set(file("src/main/gen/com/msan/ngxformatidea/grammar/"))
+        purgeOldFiles.set(false)
+        dependsOn(generateParser)
+    }
+
+    compileKotlin {
+        dependsOn(generateParser)
+        dependsOn(generateLexer)
+    }
+
     // Set the JVM compatibility versions
     withType<JavaCompile> {
         sourceCompatibility = "17"
@@ -45,6 +79,10 @@ tasks {
 
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
+    }
+
+    jar {
+        duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     }
 
     runIde {
