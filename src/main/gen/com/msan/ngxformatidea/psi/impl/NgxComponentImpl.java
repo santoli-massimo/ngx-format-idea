@@ -27,22 +27,4 @@ public class NgxComponentImpl extends ASTWrapperPsiElement implements NgxCompone
     else super.accept(visitor);
   }
 
-  @Override
-  @NotNull
-  public NgxComponentEnd getComponentEnd() {
-    return findNotNullChildByClass(NgxComponentEnd.class);
-  }
-
-  @Override
-  @NotNull
-  public NgxComponentStart getComponentStart() {
-    return findNotNullChildByClass(NgxComponentStart.class);
-  }
-
-  @Override
-  @Nullable
-  public NgxContent getContent() {
-    return findChildByClass(NgxContent.class);
-  }
-
 }

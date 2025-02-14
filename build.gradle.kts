@@ -38,22 +38,21 @@ tasks {
 //    }
 
     generateParser {
-        sourceFile.set(file("src/main/kotlin/com/msan/ngxformatidea/grammar/NgxParser.bnf"))
-        pathToParser.set("gen/com/msan/ngxformatidea/grammar/NgxParser.java")
+        sourceFile.set(file("src/main/kotlin/com/msan/ngxformatidea/parser/NgxParser.bnf"))
+        pathToParser.set("gen/com/msan/ngxformatidea/parser/NgxParser.java")
         pathToPsiRoot.set("psi")
         targetRootOutputDir.set(file("src/main/gen/"))
-        purgeOldFiles.set(false)
+        purgeOldFiles.set(true)
     }
 
     generateLexer {
-        sourceFile.set(file("src/main/kotlin/com/msan/ngxformatidea/grammar/_NgxLexer.flex"))
-        targetOutputDir.set(file("src/main/gen/com/msan/ngxformatidea/grammar/"))
-        purgeOldFiles.set(false)
+        sourceFile.set(file("src/main/kotlin/com/msan/ngxformatidea/lexer/NgxLexer.flex"))
+        targetOutputDir.set(file("src/main/gen/com/msan/ngxformatidea/lexer/"))
+        purgeOldFiles.set(true)
         dependsOn(generateParser)
     }
 
     compileKotlin {
-        dependsOn(generateParser)
         dependsOn(generateLexer)
     }
 
@@ -69,24 +68,29 @@ tasks {
     patchPluginXml {
         sinceBuild.set("241")
         untilBuild.set("243.*")
+        dependsOn(generateParser)
     }
 
     signPlugin {
         certificateChain.set(System.getenv("CERTIFICATE_CHAIN"))
         privateKey.set(System.getenv("PRIVATE_KEY"))
         password.set(System.getenv("PRIVATE_KEY_PASSWORD"))
+        dependsOn(generateParser)
     }
 
     publishPlugin {
         token.set(System.getenv("PUBLISH_TOKEN"))
+        dependsOn(generateParser)
     }
 
     jar {
         duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+        dependsOn(generateParser)
     }
 
     runIde {
 //        ideDir.set(file("/Users/massimo/Library/Application Support/JetBrains/IntelliJIdea2024.3"))
         ideDir.set(file("/Users/massimo/Applications/IntelliJ IDEA Ultimate.app/Contents"))
+        dependsOn(generateParser)
     }
 }

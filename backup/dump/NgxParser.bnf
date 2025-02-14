@@ -1,5 +1,5 @@
 {
-  parserClass = "com.msan.ngxformatidea.grammar.NgxParser"
+  parserClass = "com.msan.ngxformatidea.grammar.dump.NgxParser"
 //  extends = "com.intellij.lang.parser.GeneratedParserUtilBase"
   extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
 
@@ -12,33 +12,45 @@
   elementTypeClass="com.msan.ngxformatidea.psi.NgxElementType"
   tokenTypeClass="com.msan.ngxformatidea.psi.NgxTokenType"
 
-//  tokens = [
+  tokens = [
 //    COMPONENT_START = "[component]"
 //    COMPONENT_END = "[/component]"
 //    TEXT = "regexp:[^\[$\\\s]+"
 //    LINE_COMMENT = "//[^\\n]*"  // Single-line comment
 //    BLOCK_COMMENT = "/\\*[^*]*\\*/"  // Multi-line comment
 //    WHITE_SPACE = "regexp:[^\S\n]+"
-//  ]
+  ]
 }
 
-file ::= component
+//file ::= (component | TEXT | LINE_COMMENT | WHITE_SPACE)*
+file ::= component*
 
-component ::= COMPONENT_START content? COMPONENT_END
+component ::= COMPONENT_START content* COMPONENT_END  { pin=1 }
+//component ::= "[component]" | "regexp:(.*)" | "[/component]"  { pin=1 }
 
-content ::= TEXT+
-
-comment ::= LINE_COMMENT | BLOCK_COMMENT
-
+//content ::= TEXT { pin=1 }
+//content ::= ("[^\\[\\]\\n\\r]+" | WHITE_SPACE | LINE_COMMENT)+ { pin=1 }
+content ::= TEXT | WHITE_SPACE | LINE_TERMINATOR { pin=1 }
+//content ::=  WHITE_SPACE | LINE_TERMINATOR { pin=1 }
+comment ::= LINE_COMMENT
 //text ::= TEXT
+
+//LINE_TERMINATOR ::= "\r|\n|\r\n"
+LINE_TERMINATOR ::= "regexp:(\r?\n)+"
+//LINE_TERMINATOR ::= "[ \t\f]"
 COMPONENT_START ::= "[component]"
 COMPONENT_END ::= "[/component]"
+//TEXT ::= "regexp:[^\\[\\]\\n\\r]+"
+//TEXT ::= "[^\\[\\]\\n\\r]+"
+//TEXT ::= "regexp:[^\r\n]"
 //TEXT ::= "regexp:[^\[$\\\s]+"
+//TEXT ::= "regexp:[^\[$\\\s]+"
+//TEXT ::= "regexp:[^\[$\\\s]+"
+WHITE_SPACE ::= "regexp:\\s+"
+LINE_COMMENT ::= "regexp://[^\\n]*"
+//NEWLINE ::= "regexp:(\r?\n)+"
 
-TEXT ::= "[^\\[\\]\\n\\r]+"
-WHITE_SPACE ::= "\\s+"
-LINE_COMMENT ::= "//[^\\n]*"
-BLOCK_COMMENT ::= "/\\*([^*]|\\*+[^*/])*\\*+/"
+//BLOCK_COMMENT ::= "/\\*([^*]|\\*+[^*/])*\\*+/"
 //COMPONENT ::= "[component]" (TEXT | TEXT | WHITE_SPACE | LINE_COMMENT | BLOCK_COMMENT)* "[/component]"
 
 

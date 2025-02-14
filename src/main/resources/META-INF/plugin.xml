@@ -34,14 +34,14 @@
         />
         <lang.parserDefinition
                 language="Ngx"
-                implementationClass="com.msan.ngxformatidea.grammar.NgxParserDefinition"
+                implementationClass="com.msan.ngxformatidea.parser.NgxParserDefinition"
         />
-<!--        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxHtmlInjector"/>-->
-        <treeStructureProvider implementation="com.msan.ngxformatidea.AngularTreeStructureProvider"/>
+        <treeStructureProvider implementation="com.msan.ngxformatidea.vfs.AngularTreeStructureProvider"/>
         <lang.syntaxHighlighterFactory language="Ngx" implementationClass="com.msan.ngxformatidea.highlighting.NgxSyntaxHighlighterFactory"/>
+        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxMultiHostInjector"/>
+<!--        <languageInjector implementation="com.msan.ngxformatidea.injection.NgxLanguageInjector"/>-->
 
-        <!--        <lang.parserDefinition language="Ngx" implementationClass="com.msan.ngxformatidea.NgxParserDefinition"/>-->
-<!--        <fileIconProvider implementation="com.msan.ngxformatidea.utils.NgxFileIconProvider"/>-->
-<!--        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxMultiHostInjector"/>-->
+
+        <!--        <fileIconProvider implementation="com.msan.ngxformatidea.utils.NgxFileIconProvider"/>-->
     </extensions>
 </idea-plugin>

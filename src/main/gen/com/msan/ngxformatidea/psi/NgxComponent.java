@@ -7,13 +7,4 @@ import com.intellij.psi.PsiElement;
 
 public interface NgxComponent extends PsiElement {
 
-  @NotNull
-  NgxComponentEnd getComponentEnd();
-
-  @NotNull
-  NgxComponentStart getComponentStart();
-
-  @Nullable
-  NgxContent getContent();
-
 }

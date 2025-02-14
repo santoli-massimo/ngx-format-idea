@@ -1,4 +1,4 @@
-package com.msan.ngxformatidea
+package com.msan.ngxformatidea.vfs
 
 import com.intellij.ide.projectView.TreeStructureProvider
 import com.intellij.ide.projectView.ViewSettings

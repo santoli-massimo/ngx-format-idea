@@ -1,0 +1,24 @@
+{
+  parserClass = "com.msan.ngxformatidea.parser.NgxParser"
+//  extends = "com.intellij.lang.parser.GeneratedParserUtilBase"
+  extends = "com.intellij.extapi.psi.ASTWrapperPsiElement"
+
+  psiClassPrefix="Ngx"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.msan.ngxformatidea.psi"
+  psiImplPackage="com.msan.ngxformatidea.psi.impl"
+
+  elementTypeHolderClass="com.msan.ngxformatidea.psi.NgxTypes"
+  elementTypeClass="com.msan.ngxformatidea.psi.NgxElementType"
+  tokenTypeClass="com.msan.ngxformatidea.psi.NgxTokenType"
+
+  // Everything not used below that should be a token
+  tokens = [
+    "WHITE_SPACE";
+  ]
+}
+
+file ::= component* COMMENT* WHITE_SPACE*
+component ::= COMPONENT_START CONTENT* COMPONENT_END
+
+

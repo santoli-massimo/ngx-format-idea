@@ -1,4 +1,4 @@
-package com.msan.ngxformatidea
+package com.msan.ngxformatidea.vfs
 
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.projectView.ViewSettings
@@ -9,7 +9,6 @@ import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
-import com.msan.ngxformatidea.vfs.NgxVirtualFile
 
 
 class AngularComponentNode(

@@ -1,34 +1,61 @@
 package com.msan.ngxformatidea.injection
 
 import com.intellij.lang.Language
+import com.intellij.lang.html.HTMLLanguage
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
 import com.intellij.openapi.util.TextRange
+import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiLanguageInjectionHost
+import com.intellij.psi.util.PsiTreeUtil
+import com.msan.ngxformatidea.language.NgxLanguage
+import com.msan.ngxformatidea.psi.NgxComponent
+import com.msan.ngxformatidea.psi.NgxFileType
+import com.msan.ngxformatidea.psi.NgxTypes
 import com.msan.ngxformatidea.utils.Logger
 
 
 class NgxMultiHostInjector : MultiHostInjector {
     override fun elementsToInjectIn(): List<Class<out PsiElement>> {
-        return listOf(PsiLanguageInjectionHost::class.java)
+//        return listOf(PsiLanguageInjectionHost::class.java)
+//        return listOf(PsiLanguageInjectionHost::class.java)
+        return listOf(PsiElement::class.java)
+
+
+//        return listOf(NgxComponent::class.java) // Inject at the `component` level
     }
 
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
-        if (!context.isValid) return
+//        if (!context.isValid) return
         val hostText = context.containingFile
         val virtualFile = context.containingFile?.virtualFile ?: return
-//        if(virtualFile.fileType is NgxFileType){
-//            Logger.warn("***************** NgxFileType")
+
+        if(virtualFile.fileType !is NgxFileType) return
+
+        val component = PsiTreeUtil.getParentOfType(context, NgxComponent::class.java)
+
+//        if (component != null) {
+//            println("✅ Found component: ${component.text}") // Debugging
+//
+////            registrar.startInjecting(NgxLanguage.INSTANCE)
+//            component.children.filter { it.node.elementType == NgxTypes.TEXT }.forEach { textNode ->
+//                println("✅ Injecting into: ${textNode.text}") // Debugging
+////                registrar.addPlace(null, null, textNode, textNode.textRange)
+//            }
+////            registrar.doneInjecting()
+//        } else {
+//            println("❌ No component found for: ${context.text}") // Debugging
 //        }
 
-        if (!virtualFile.name.endsWith(".ngx")) return
 
-        Logger.warn("#################################")
-        Logger.warn(context.text)
+        Logger.warn("############## INJECTION ################### ${context.text}")
 
         // Get the correct PSI element containing the full template
-        val ranges = getRangeFor(hostText.text, "<ng-component-template>", "</ng-component-template>") ?: return
+//        val ranges = getRangeFor(hostText.text, "<ng-component-template>", "</ng-component-template>") ?: return
+//        val ranges = getRangeFor(context.text, "/*", "*/") ?: return
+
+//        injectLanguage(HTMLLanguage.INSTANCE, registrar, context as PsiLanguageInjectionHost, ranges)
 //        val children = hostText.getChildren()
 //        for (child in children) {
 //            Logger.warn("###############################################################")
@@ -59,6 +86,7 @@ class NgxMultiHostInjector : MultiHostInjector {
 //        injectLanguage(HTMLLanguage.INSTANCE, registrar, context.parent.parent as PsiLanguageInjectionHost, ranges)
 
 //        InjectedLanguagePlaces.addPlace(HTMLLanguage.INSTANCE, ranges, context.containingFile, null)
+
 //        InjectedLanguageManager.getInjectionHost(host)
     }
 
