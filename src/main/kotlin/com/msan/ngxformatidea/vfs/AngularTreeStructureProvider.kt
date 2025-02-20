@@ -3,21 +3,22 @@ package com.msan.ngxformatidea.vfs
 import com.intellij.ide.projectView.TreeStructureProvider
 import com.intellij.ide.projectView.ViewSettings
 import com.intellij.ide.util.treeView.AbstractTreeNode
+import com.intellij.lang.Language
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.diagnostic.Logger
 import com.intellij.psi.PsiFile
+import com.msan.ngxformatidea.utils.Logger
 
 
 class AngularTreeStructureProvider(private val project: Project) : TreeStructureProvider {
     private val fileManager = AngularComponentFileManager(project)
-    private val logger = Logger.getInstance(AngularTreeStructureProvider::class.java)
 
     override fun modify(
         parent: AbstractTreeNode<*>,
         children: Collection<AbstractTreeNode<*>>,
         settings: ViewSettings?
     ): Collection<AbstractTreeNode<*>> {
+
         val newChildren = mutableListOf<AbstractTreeNode<*>>()
         val groupedFiles = mutableMapOf<String, MutableList<VirtualFile>>()
 
@@ -43,6 +44,8 @@ class AngularTreeStructureProvider(private val project: Project) : TreeStructure
                 )
             )
         }
+
+
 
         return newChildren
     }

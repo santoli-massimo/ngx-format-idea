@@ -1,30 +1,25 @@
 package com.msan.ngxformatidea.language
-import com.intellij.lang.Language
 
-class NgxLanguage private constructor() : Language("Ngx") {
+import com.intellij.lang.Language;
+import com.intellij.lang.javascript.JavaScriptSupportLoader
+
+//val typeScriptLanguage: Language = Language.findLanguageByID("TypeScript") ?: Language.ANY
+
+class NgxLanguage private constructor() : Language(
+//    JavaScriptSupportLoader.TYPESCRIPT,
+    "Ngx"
+) {
     companion object {
         @JvmStatic
         val INSTANCE: NgxLanguage = NgxLanguage()
+
+        @JvmStatic
+        val Angular2Html: Language = Language.findLanguageByID("Angular2Html") ?: Language.ANY
    }
    private fun readResolve(): Any = NgxLanguage
    override fun isCaseSensitive() = true
    override fun getDisplayName() = "Ngx"
 }
-
-//object NgxLanguage : Language("Ngx") {
-//   private fun readResolve(): Any = NgxLanguage
-//   override fun isCaseSensitive() = true
-//   override fun getDisplayName() = "Ngx"
-//
-//}
-
-//object NgxLanguage : Language("NGX")
-
-
-//object NgxLanguage : Language("Ngx") {
-//    override fun isCaseSensitive() = true
-//}
-
 
 
 

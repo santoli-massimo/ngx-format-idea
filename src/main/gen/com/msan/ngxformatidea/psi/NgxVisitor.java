@@ -11,6 +11,18 @@ public class NgxVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+  public void visitStyle(@NotNull NgxStyle o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTemplate(@NotNull NgxTemplate o) {
+    visitPsiElement(o);
+  }
+
+  public void visitTsElement(@NotNull NgxTsElement o) {
+    visitPsiElement(o);
+  }
+
   public void visitPsiElement(@NotNull PsiElement o) {
     visitElement(o);
   }

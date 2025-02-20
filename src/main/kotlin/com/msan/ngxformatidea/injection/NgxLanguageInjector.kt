@@ -7,7 +7,6 @@ import com.intellij.psi.PsiLanguageInjectionHost
 import com.intellij.lang.Language
 import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.LanguageInjector
-import com.msan.ngxformatidea.psi.NgxComponent
 import com.msan.ngxformatidea.utils.Logger
 
 class NgxLanguageInjector : LanguageInjector {
@@ -27,14 +26,14 @@ class NgxLanguageInjector : LanguageInjector {
         val html = Language.findLanguageByID("HTML") ?: return
         val textRange = host.textRange ?: return
 
-        if (host is NgxComponent) {
-            injectionPlacesRegistrar.addPlace(
-                html,
-                textRange,
-                null,
-                null
-            )
-        }
+//        if (host is NgxComponent) {
+//            injectionPlacesRegistrar.addPlace(
+//                html,
+//                textRange,
+//                null,
+//                null
+//            )
+//        }
 
     }
 

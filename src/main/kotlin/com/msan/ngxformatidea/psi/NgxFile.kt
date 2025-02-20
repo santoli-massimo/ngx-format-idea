@@ -5,9 +5,7 @@ import com.intellij.psi.FileViewProvider
 import com.msan.ngxformatidea.language.NgxLanguage
 
 
-class NgxFile(viewProvider: FileViewProvider) :
-    PsiFileBase(viewProvider, NgxLanguage.INSTANCE) {
-
+class NgxFile(viewProvider: FileViewProvider) : PsiFileBase(viewProvider, NgxLanguage.INSTANCE) {
     override fun getFileType(): NgxFileType {
         return NgxFileType.INSTANCE
     }

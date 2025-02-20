@@ -21,10 +21,13 @@
     <!-- Product and plugin compatibility requirements.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
+    <depends>JavaScript</depends>
+
 
     <!-- Extension points defined by the plugin.
          Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <!-- VFS-->
         <fileType
                 name="Ngx File"
                 implementationClass="com.msan.ngxformatidea.psi.NgxFileType"
@@ -32,16 +35,14 @@
                 language="Ngx"
                 extensions="ngx"
         />
-        <lang.parserDefinition
-                language="Ngx"
-                implementationClass="com.msan.ngxformatidea.parser.NgxParserDefinition"
-        />
         <treeStructureProvider implementation="com.msan.ngxformatidea.vfs.AngularTreeStructureProvider"/>
+
+        <!-- LANG-->
+        <lang.parserDefinition language="Ngx" implementationClass="com.msan.ngxformatidea.parser.NgxParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Ngx" implementationClass="com.msan.ngxformatidea.highlighting.NgxSyntaxHighlighterFactory"/>
         <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxMultiHostInjector"/>
-<!--        <languageInjector implementation="com.msan.ngxformatidea.injection.NgxLanguageInjector"/>-->
 
-
+        <lang.fileViewProviderFactory language="Ngx" implementationClass="com.msan.ngxformatidea.language.NgxFileViewProviderFactory"/>
         <!--        <fileIconProvider implementation="com.msan.ngxformatidea.utils.NgxFileIconProvider"/>-->
     </extensions>
 </idea-plugin>

@@ -8,16 +8,17 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import static com.msan.ngxformatidea.psi.NgxTypes.*;
+import com.intellij.extapi.psi.ASTWrapperPsiElement;
 import com.msan.ngxformatidea.psi.*;
 
-public class NgxComponentImpl extends NgxComponentMixin implements NgxComponent {
+public class NgxTsElementImpl extends ASTWrapperPsiElement implements NgxTsElement {
 
-  public NgxComponentImpl(ASTNode node) {
+  public NgxTsElementImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull NgxVisitor visitor) {
-    visitor.visitComponent(this);
+    visitor.visitTsElement(this);
   }
 
   @Override

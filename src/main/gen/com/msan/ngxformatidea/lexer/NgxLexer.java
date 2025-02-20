@@ -8,8 +8,6 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.TokenType;
 import com.msan.ngxformatidea.psi.NgxTokenType;
 import com.msan.ngxformatidea.psi.NgxTypes;
-//import com.intellij.psi.xml.XmlTokenType;
-
 
 public class NgxLexer implements FlexLexer {
 
@@ -21,7 +19,9 @@ public class NgxLexer implements FlexLexer {
 
   /** lexical states */
   public static final int YYINITIAL = 0;
-  public static final int COMPONENT_MODE = 2;
+  public static final int TEMPLATE_MODE = 2;
+  public static final int STYLE_MODE = 4;
+  public static final int COMPONENT_MODE = 6;
 
   /**
    * ZZ_LEXSTATE[l] is the state in the DFA for the lexical state l
@@ -30,7 +30,7 @@ public class NgxLexer implements FlexLexer {
    * l is of the form l = 2*k, k a non negative integer
    */
   private static final int ZZ_LEXSTATE[] = {
-     0,  0,  1, 1
+     0,  0,  1,  1,  2,  2,  3, 3
   };
 
   /**
@@ -67,11 +67,11 @@ public class NgxLexer implements FlexLexer {
   private static final int [] ZZ_CMAP_BLOCKS = zzUnpackcmap_blocks();
 
   private static final String ZZ_CMAP_BLOCKS_PACKED_0 =
-    "\13\0\3\1\23\0\1\2\6\0\1\3\1\4\1\0"+
-    "\1\5\3\0\1\6\17\0\1\7\33\0\1\10\1\0"+
-    "\1\11\1\12\4\0\1\13\1\0\1\14\7\0\1\15"+
-    "\1\16\1\17\1\20\3\0\1\21\7\0\1\22\10\0"+
-    "\1\1\u01a2\0\2\1\326\0\u0100\1";
+    "\11\0\2\1\1\2\2\3\22\0\1\1\16\0\1\4"+
+    "\53\0\1\5\1\0\1\6\3\0\1\7\1\0\1\10"+
+    "\1\0\1\11\6\0\1\12\1\13\1\14\1\15\1\16"+
+    "\2\0\1\17\1\20\4\0\1\21\13\0\1\3\u01a2\0"+
+    "\2\3\326\0\u0100\2";
 
   private static int [] zzUnpackcmap_blocks() {
     int [] result = new int[1024];
@@ -98,10 +98,12 @@ public class NgxLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\2\0\2\1\3\2\33\0\1\3\3\0\1\4\13\0";
+    "\4\0\1\1\1\2\1\1\2\3\2\4\2\5\37\0"+
+    "\1\6\7\0\1\7\6\0\1\10\2\0\1\11\1\12"+
+    "\1\0\1\13";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[50];
+    int [] result = new int[66];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -126,16 +128,18 @@ public class NgxLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\23\0\46\0\71\0\46\0\114\0\137\0\162"+
-    "\0\205\0\230\0\253\0\276\0\321\0\344\0\367\0\u010a"+
-    "\0\u011d\0\u0130\0\u0143\0\u0156\0\u0169\0\u017c\0\u018f\0\u01a2"+
-    "\0\u01b5\0\u01c8\0\u01db\0\u01ee\0\u0201\0\u0214\0\u0227\0\u023a"+
-    "\0\u024d\0\u0260\0\46\0\u0273\0\u0286\0\u0299\0\46\0\u02ac"+
-    "\0\u02bf\0\u02d2\0\u02e5\0\u02f8\0\u030b\0\u031e\0\u0331\0\u0344"+
-    "\0\u0357\0\u036a";
+    "\0\0\0\22\0\44\0\66\0\110\0\132\0\154\0\110"+
+    "\0\176\0\110\0\220\0\110\0\242\0\264\0\306\0\330"+
+    "\0\352\0\374\0\u010e\0\u0120\0\u0132\0\u0144\0\u0156\0\u0168"+
+    "\0\u017a\0\u018c\0\u019e\0\u01b0\0\u01c2\0\u01d4\0\u01e6\0\u01f8"+
+    "\0\u020a\0\u021c\0\u022e\0\u0240\0\u0252\0\u0264\0\u0276\0\u0288"+
+    "\0\u029a\0\u02ac\0\u02be\0\u02d0\0\110\0\u02e2\0\u02f4\0\u0306"+
+    "\0\u0318\0\u032a\0\u033c\0\u034e\0\110\0\u0360\0\u0372\0\u0384"+
+    "\0\u0396\0\u03a8\0\u03ba\0\110\0\u03cc\0\u03de\0\110\0\110"+
+    "\0\u03f0\0\110";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[50];
+    int [] result = new int[66];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -158,22 +162,26 @@ public class NgxLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpacktrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\10\3\1\4\12\3\1\5\1\3\1\5\1\6\4\5"+
-    "\1\7\12\5\36\0\1\10\17\0\1\11\20\0\1\12"+
-    "\33\0\1\13\15\0\1\14\23\0\1\15\24\0\1\16"+
-    "\15\0\1\17\31\0\1\20\23\0\1\21\13\0\1\22"+
-    "\26\0\1\23\24\0\1\24\25\0\1\25\20\0\1\26"+
-    "\20\0\1\27\14\0\1\30\31\0\1\31\17\0\1\32"+
-    "\11\0\1\33\35\0\1\34\22\0\1\35\13\0\1\36"+
-    "\27\0\1\37\27\0\1\40\3\0\1\41\36\0\1\42"+
-    "\15\0\1\43\17\0\1\44\35\0\1\45\14\0\1\46"+
-    "\20\0\1\47\30\0\1\50\20\0\1\51\25\0\1\52"+
-    "\21\0\1\53\21\0\1\54\20\0\1\55\24\0\1\56"+
-    "\25\0\1\57\12\0\1\60\15\0\1\61\22\0\1\62"+
-    "\23\0\1\5\15\0";
+    "\1\5\1\6\1\0\1\6\1\5\1\7\14\5\2\10"+
+    "\2\0\1\10\1\11\14\10\2\12\2\0\1\12\1\13"+
+    "\14\12\2\14\2\0\1\14\1\15\14\14\23\0\1\6"+
+    "\1\0\1\6\26\0\1\16\6\0\1\17\1\20\5\0"+
+    "\1\21\21\0\1\22\21\0\1\23\32\0\1\24\24\0"+
+    "\1\25\12\0\1\26\30\0\1\27\20\0\1\30\12\0"+
+    "\1\31\24\0\1\32\27\0\1\33\13\0\1\34\17\0"+
+    "\1\35\30\0\1\36\16\0\1\37\22\0\1\40\15\0"+
+    "\1\41\25\0\1\42\16\0\1\43\27\0\1\44\13\0"+
+    "\1\45\23\0\1\46\15\0\1\47\22\0\1\50\25\0"+
+    "\1\51\15\0\1\52\25\0\1\53\17\0\1\54\13\0"+
+    "\1\55\22\0\1\56\24\0\1\57\20\0\1\60\25\0"+
+    "\1\61\15\0\1\62\30\0\1\63\10\0\1\64\20\0"+
+    "\1\65\27\0\1\66\21\0\1\67\16\0\1\70\30\0"+
+    "\1\71\12\0\1\72\30\0\1\73\7\0\1\74\24\0"+
+    "\1\75\24\0\1\76\13\0\1\77\21\0\1\100\33\0"+
+    "\1\101\7\0\1\102\13\0";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[893];
+    int [] result = new int[1026];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -211,11 +219,12 @@ public class NgxLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\2\0\1\11\1\1\1\11\2\1\33\0\1\11\3\0"+
-    "\1\11\13\0";
+    "\4\0\1\11\2\1\1\11\1\1\1\11\1\1\1\11"+
+    "\1\1\37\0\1\11\7\0\1\11\6\0\1\11\2\0"+
+    "\2\11\1\0\1\11";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[50];
+    int [] result = new int[66];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -286,19 +295,6 @@ public class NgxLexer implements FlexLexer {
   public NgxLexer() {
     this((java.io.Reader)null);
   }
-
-  // This is requred fot the generated lexer to import all the tokens
-//  public static final IElementType WHITE_SPACE = new TokenType.WHITE_SPACE("WHITE_SPACE");
-//  public static final IElementType BAD_CHARACTER = new TokenType.BAD_CHARACTER("BAD_CHARACTER");
-
-//  public static final IElementType COMPONENT_CONTENT = new NgxTokenType("COMPONENT_CONTENT");
-//  public static final IElementType LINE_COMMENT = new NgxTokenType("LINE_COMMENT");
-//  public static final IElementType BLOCK_COMMENT = new NgxTokenType("BLOCK_COMMENT");
-
-//  public static final IElementType COMPONENT_START = new NgxTokenType("COMPONENT_START");
-//  public static final IElementType COMPONENT_END = new NgxTokenType("COMPONENT_END");
-//  public static final IElementType COMMENT = new NgxTokenType("COMMENT");
-
 
 
   /**
@@ -546,22 +542,57 @@ public class NgxLexer implements FlexLexer {
             { return TokenType.BAD_CHARACTER;
             }
           // fall through
-          case 5: break;
+          case 12: break;
           case 2:
-            { return NgxTypes.CONTENT;
+            { return NgxTypes.WHITE_SPACE;
             }
           // fall through
-          case 6: break;
+          case 13: break;
           case 3:
+            { return NgxTypes.TEMPLATE_CONTENT;
+            }
+          // fall through
+          case 14: break;
+          case 4:
+            { return NgxTypes.STYLE_CONTENT;
+            }
+          // fall through
+          case 15: break;
+          case 5:
+            { return NgxTypes.COMPONENT_CONTENT;
+            }
+          // fall through
+          case 16: break;
+          case 6:
+            { yybegin(STYLE_MODE); return NgxTypes.STYLE_START;
+            }
+          // fall through
+          case 17: break;
+          case 7:
+            { yybegin(YYINITIAL); return NgxTypes.STYLE_END;
+            }
+          // fall through
+          case 18: break;
+          case 8:
+            { yybegin(TEMPLATE_MODE); return NgxTypes.TEMPLATE_START;
+            }
+          // fall through
+          case 19: break;
+          case 9:
             { yybegin(COMPONENT_MODE); return NgxTypes.COMPONENT_START;
             }
           // fall through
-          case 7: break;
-          case 4:
+          case 20: break;
+          case 10:
+            { yybegin(YYINITIAL); return NgxTypes.TEMPLATE_END;
+            }
+          // fall through
+          case 21: break;
+          case 11:
             { yybegin(YYINITIAL); return NgxTypes.COMPONENT_END;
             }
           // fall through
-          case 8: break;
+          case 22: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }

@@ -5,27 +5,12 @@ import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.TokenType;
 import com.msan.ngxformatidea.psi.NgxTokenType;
 import com.msan.ngxformatidea.psi.NgxTypes;
-//import com.intellij.psi.xml.XmlTokenType;
-
 %%
 
 %{
   public NgxLexer() {
     this((java.io.Reader)null);
   }
-
-  // This is requred fot the generated lexer to import all the tokens
-//  public static final IElementType WHITE_SPACE = new TokenType.WHITE_SPACE("WHITE_SPACE");
-//  public static final IElementType BAD_CHARACTER = new TokenType.BAD_CHARACTER("BAD_CHARACTER");
-
-//  public static final IElementType COMPONENT_CONTENT = new NgxTokenType("COMPONENT_CONTENT");
-//  public static final IElementType LINE_COMMENT = new NgxTokenType("LINE_COMMENT");
-//  public static final IElementType BLOCK_COMMENT = new NgxTokenType("BLOCK_COMMENT");
-
-//  public static final IElementType COMPONENT_START = new NgxTokenType("COMPONENT_START");
-//  public static final IElementType COMPONENT_END = new NgxTokenType("COMPONENT_END");
-//  public static final IElementType COMMENT = new NgxTokenType("COMMENT");
-
 %}
 
 %public
@@ -35,7 +20,56 @@ import com.msan.ngxformatidea.psi.NgxTypes;
 %type IElementType
 %unicode
 
+WHITE_SPACE = [ \n\r\t\f\u2028\u2029\u0085]+
+
+%state TEMPLATE_MODE
+template_key = "template"
+TEMPLATE_START = "[template]"
+TEMPLATE_END = "[/template]"
+TEMPLATE_CONTENT = "([^\[]|\[(?!\/?template\]))+"
+
+%state STYLE_MODE
+style_key = "style"
+STYLE_START = "[style]"
+STYLE_END = "[/style]"
+STYLE_CONTENT = "([^\[]|\[(?!\/?style\]))+"
+
 %state COMPONENT_MODE
+component_key = "component"
+COMPONENT_START = "[component]"
+COMPONENT_END = "[/component]"
+COMPONENT_CONTENT = "([^\[]|\[(?!\/?component\]))+"
+
+
+%%
+
+<YYINITIAL> {
+  {WHITE_SPACE}       { return NgxTypes.WHITE_SPACE; }
+  {TEMPLATE_START}    { yybegin(TEMPLATE_MODE); return NgxTypes.TEMPLATE_START; }
+  {STYLE_START}       { yybegin(STYLE_MODE); return NgxTypes.STYLE_START; }
+  {COMPONENT_START}   { yybegin(COMPONENT_MODE); return NgxTypes.COMPONENT_START; }
+}
+
+<TEMPLATE_MODE> {
+  {TEMPLATE_END}      { yybegin(YYINITIAL); return NgxTypes.TEMPLATE_END; }
+  .|\n                { return NgxTypes.TEMPLATE_CONTENT; }
+}
+
+<STYLE_MODE> {
+  {STYLE_END}         { yybegin(YYINITIAL); return NgxTypes.STYLE_END; }
+  .|\n                { return NgxTypes.STYLE_CONTENT; }
+}
+
+<COMPONENT_MODE> {
+  {COMPONENT_END}     { yybegin(YYINITIAL); return NgxTypes.COMPONENT_END; }
+  .|\n                { return NgxTypes.COMPONENT_CONTENT; }
+}
+
+.|\n { return TokenType.BAD_CHARACTER; }  // Catch-all for unexpected tokens
+
+
+
+
 
 //WHITE_SPACE="[ \t\f\r\n]+"
 //LINE_COMMENT="//" [^\n]*
@@ -58,8 +92,7 @@ import com.msan.ngxformatidea.psi.NgxTypes;
 
 //ALPHA=[:letter:]
 //DIGIT=[0-9]
-//WHITE_SPACE_CHARS=[ \n\r\t\f\u2028\u2029\u0085]+
-//
+
 //TAG_NAME=({ALPHA}|"_"|":")({ALPHA}|{DIGIT}|"_"|":"|"."|"-")*
 //ATTRIBUTE_NAME=([^ \n\r\t\f\"\'<>/=])+
 //
@@ -75,21 +108,4 @@ import com.msan.ngxformatidea.psi.NgxTypes;
 //
 //COMMENT = {TraditionalComment} | {EndOfLineComment} | {DocumentationComment}
 
-COMPONENT_START = "[component]"
-COMPONENT_END = "[/component]"
-CONTENT = "([^\[]|\[(?!/component\]))+"
-
-%%
-
-<YYINITIAL> {
-  {COMPONENT_START}       { yybegin(COMPONENT_MODE); return NgxTypes.COMPONENT_START; }
-}
-
-
-<COMPONENT_MODE> {
-  {COMPONENT_END}         { yybegin(YYINITIAL); return NgxTypes.COMPONENT_END; }
-  {CONTENT}               { return NgxTypes.CONTENT; } // Treat everything inside as content
-  .|\n                    { return NgxTypes.CONTENT; } // Treat everything inside as content
-}
-
-[^] { return TokenType.BAD_CHARACTER; }
+//CONTENT = "([^\[]|\[(?!/component\]))+"

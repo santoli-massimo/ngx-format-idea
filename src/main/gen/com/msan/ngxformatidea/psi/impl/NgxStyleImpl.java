@@ -10,14 +10,14 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.msan.ngxformatidea.psi.NgxTypes.*;
 import com.msan.ngxformatidea.psi.*;
 
-public class NgxComponentImpl extends NgxComponentMixin implements NgxComponent {
+public class NgxStyleImpl extends NgxComponentMixin implements NgxStyle {
 
-  public NgxComponentImpl(ASTNode node) {
+  public NgxStyleImpl(ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull NgxVisitor visitor) {
-    visitor.visitComponent(this);
+    visitor.visitStyle(this);
   }
 
   @Override

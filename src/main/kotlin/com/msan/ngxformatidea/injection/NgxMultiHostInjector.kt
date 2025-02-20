@@ -1,248 +1,71 @@
 package com.msan.ngxformatidea.injection
 
 import com.intellij.lang.Language
+import com.intellij.lang.css.CSSLanguage
 import com.intellij.lang.html.HTMLLanguage
 import com.intellij.lang.injection.MultiHostInjector
 import com.intellij.lang.injection.MultiHostRegistrar
+import com.intellij.lang.javascript.JavaScriptSupportLoader.TYPESCRIPT
 import com.intellij.openapi.util.TextRange
-import com.intellij.psi.InjectedLanguagePlaces
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiLanguageInjectionHost
-import com.intellij.psi.util.PsiTreeUtil
 import com.msan.ngxformatidea.language.NgxLanguage
-import com.msan.ngxformatidea.psi.NgxComponent
 import com.msan.ngxformatidea.psi.NgxFileType
-import com.msan.ngxformatidea.psi.NgxTypes
 import com.msan.ngxformatidea.utils.Logger
+import com.intellij.lang.injection.InjectedLanguageManager;
 
 
 class NgxMultiHostInjector : MultiHostInjector {
     override fun elementsToInjectIn(): List<Class<out PsiElement>> {
-//        return listOf(PsiLanguageInjectionHost::class.java)
-//        return listOf(PsiLanguageInjectionHost::class.java)
-        return listOf(PsiElement::class.java)
-
-
-//        return listOf(NgxComponent::class.java) // Inject at the `component` level
+        return listOf(PsiLanguageInjectionHost::class.java)
+//        return listOf(PsiElement::class.java)
     }
 
     override fun getLanguagesToInject(registrar: MultiHostRegistrar, context: PsiElement) {
-//        if (!context.isValid) return
         val hostText = context.containingFile
+        val host = context as PsiLanguageInjectionHost
         val virtualFile = context.containingFile?.virtualFile ?: return
+
+//        val allLanguages = Language.getRegisteredLanguages()
+//        Logger.warn("Linguaggi registrati: ${allLanguages.map { it.id }}")
+//        Logger.warn("------------- ${virtualFile.fileType}")
 
         if(virtualFile.fileType !is NgxFileType) return
 
-        val component = PsiTreeUtil.getParentOfType(context, NgxComponent::class.java)
+//        Logger.warn("############## INJECTION ################### ${host.text}")
 
-//        if (component != null) {
-//            println("✅ Found component: ${component.text}") // Debugging
-//
-////            registrar.startInjecting(NgxLanguage.INSTANCE)
-//            component.children.filter { it.node.elementType == NgxTypes.TEXT }.forEach { textNode ->
-//                println("✅ Injecting into: ${textNode.text}") // Debugging
-////                registrar.addPlace(null, null, textNode, textNode.textRange)
-//            }
-////            registrar.doneInjecting()
-//        } else {
-//            println("❌ No component found for: ${context.text}") // Debugging
-//        }
+//        injectLanguage("[template]", "[/template]", NgxLanguage.Angular2Html, registrar, host)
+        injectLanguage("[template]", "[/template]", HTMLLanguage.INSTANCE, registrar, host)
+        injectLanguage("[style]", "[/style]", CSSLanguage.INSTANCE, registrar, host)
+        injectLanguage("[component]", "[/component]", TYPESCRIPT, registrar, host)
 
-
-        Logger.warn("############## INJECTION ################### ${context.text}")
-
-        // Get the correct PSI element containing the full template
-//        val ranges = getRangeFor(hostText.text, "<ng-component-template>", "</ng-component-template>") ?: return
-//        val ranges = getRangeFor(context.text, "/*", "*/") ?: return
-
-//        injectLanguage(HTMLLanguage.INSTANCE, registrar, context as PsiLanguageInjectionHost, ranges)
-//        val children = hostText.getChildren()
-//        for (child in children) {
-//            Logger.warn("###############################################################")
-//            Logger.warn("🔎 Child: ${child.text} | Type: ${child.javaClass.simpleName}")
-//        }
-
-//        val parent = context.parent
-//        if(parent.text.startsWith("<ng-component-template>") && parent.text.endsWith("</ng-component-template>")){
-//            Logger.warn("Parent is <ng-component-template>")
-//            injectLanguage(HTMLLanguage.INSTANCE, registrar, parent as PsiLanguageInjectionHost, parent.textRange)
-//        }
-
-
-//        val children = hostText.getChildren()
-//        val matchingElements = children.filter { child ->
-//            val text = child.text
-//            text.startsWith("<ng-component-template>") && text.endsWith("</ng-component-template>")
-//        }
-//        Logger.warn("Found ${matchingElements[0].text}")
-
-//        Logger.warn("Checking context:${context.textRange} - ${context.text}")
-//        val host = hostText.findElementAt(ranges.startOffset) as? PsiLanguageInjectionHost ?: return
-//        val host = hostText.findElementAt(ranges.startOffset) as? PsiLanguageInjectionHost
-
-//        Logger.warn("Injecting into ${host.text}")
-//        Logger.warn("Injecting into ${host}...")
-
-//        injectLanguage(HTMLLanguage.INSTANCE, registrar, context.parent.parent as PsiLanguageInjectionHost, ranges)
-
-//        InjectedLanguagePlaces.addPlace(HTMLLanguage.INSTANCE, ranges, context.containingFile, null)
-
-//        InjectedLanguageManager.getInjectionHost(host)
     }
 
     private fun injectLanguage(
+        startMarker: String,
+        endMarker: String,
         language: Language,
         registrar: MultiHostRegistrar,
         host: PsiLanguageInjectionHost,
-        textRange: TextRange
     ){
+        val ranges = getRangeFor(host.text, startMarker, endMarker) ?: return
 
         registrar.startInjecting(language)
-            .addPlace(null, null, host, textRange)
+            .addPlace(null, null, host, ranges)
             .doneInjecting()
     }
 
-    private fun getRangeFor(
-        hostText: String,
-        startMarker: String,
-        endMarker: String?,
-    ): TextRange? {
-        val startOffset = hostText.indexOf(startMarker)
-        val endOffset = endMarker?.let { hostText.indexOf(it, startOffset) } ?: hostText.length
-//        Logger.warn("startOffset: $startOffset, endOffset: $endOffset")
+    fun getRangeFor(text: String, startTag: String, endTag: String): TextRange? {
+        val startIndex = text.indexOf(startTag)
+        val endIndex = text.indexOf(endTag)
 
-        if (startOffset == -1 || endOffset == -1 || startOffset >= endOffset) { return null }
-        val adjustedStart = startOffset + startMarker.length
-        val adjustedEnd = adjustedStart + endOffset
-        if (adjustedStart >= adjustedEnd) { return null }
+        if (startIndex == -1 || endIndex == -1 || startIndex >= endIndex) { return null }
 
-//        Logger.warn("Range OK!")
+        val contentStart = startIndex + startTag.length
+        val contentEnd = endIndex
 
-        return TextRange(adjustedStart, adjustedEnd)
-    }
-
-//    override fun getLanguagesToInject(registrar: MultiHostRegistrar, host: PsiElement) {
-//        if (host !is PsiLanguageInjectionHost || !host.isValid) return
-//        val psiFile = host.containingFile ?: return
-//        val virtualFile = psiFile.virtualFile ?: return
-//
-//        if (!virtualFile.name.endsWith(".ngx")) return
-//
-//        // Get the full template content from the correct PSI root element
-//        val parent = findRootTemplateElement(host) ?: host // Default to host if no better match is found
-//        val parentText = parent.text
-//        val hostRange = parent.textRange
-//
-//        Logger.warn("Injecting into full template: ${parentText.take(100)}...")
-//
-//        injectLanguage(registrar, parent, parentText, "<ng-component-template>", "</ng-component-template>", HTMLLanguage.INSTANCE, hostRange)
-//    }
-
-
-    private fun injectLanguage(
-        registrar: MultiHostRegistrar,
-        host: PsiLanguageInjectionHost,
-        hostText: String,
-        startMarker: String,
-        endMarker: String?,
-        language: Language,
-        hostRange: TextRange
-    ) {
-        val startOffset = hostText.indexOf(startMarker)
-        val endOffset = endMarker?.let { hostText.indexOf(it, startOffset) } ?: hostText.length
-
-        if (startOffset == -1 || endOffset == -1 || startOffset >= endOffset) {
-            Logger.warn("Skipping injection for ${language.displayName} - invalid start/end offsets ($startOffset, $endOffset)")
-            return
-        }
-
-        val adjustedStart = hostRange.startOffset + startOffset + startMarker.length
-        val adjustedEnd = hostRange.startOffset + endOffset
-
-        if (adjustedStart >= adjustedEnd || !hostRange.containsRange(adjustedStart, adjustedEnd)) {
-            Logger.warn("Skipping invalid injection for ${language.displayName}: Range ($adjustedStart, $adjustedEnd) out of host range ${hostRange}")
-            return
-        }
-
-        val rangeInsideHost = TextRange(adjustedStart, adjustedEnd)
-
-        Logger.warn("@@@@@@@@@@ Injecting ${language.displayName} from $rangeInsideHost in host range ${hostRange}")
-
-        registrar.startInjecting(language)
-            .addPlace(null, null, host, rangeInsideHost)
-            .doneInjecting()
+        return TextRange(contentStart, contentEnd)
     }
 }
 
-
-
-
-//import com.intellij.lang.Language
-//import com.intellij.lang.html.HTMLLanguage
-//import com.intellij.lang.injection.MultiHostInjector
-//import com.intellij.lang.injection.MultiHostRegistrar
-//import com.intellij.openapi.util.TextRange
-//import com.intellij.psi.PsiElement
-//import com.intellij.psi.PsiLanguageInjectionHost
-////import com.msan.ngxformatidea.lang.CssLanguage
-////import com.msan.ngxformatidea.lang.JavaScriptLanguage
-//
-//class AngularMultiHostInjector : MultiHostInjector {
-//    override fun elementsToInjectIn(): List<Class<out PsiElement>> {
-//        return listOf(PsiLanguageInjectionHost::class.java)
-//    }
-//
-//    override fun getLanguagesToInject(registrar: MultiHostRegistrar, host: PsiElement) {
-//        if (host !is PsiLanguageInjectionHost || !host.isValid) return
-//        val psiFile = host.containingFile ?: return
-//        val virtualFile = psiFile.virtualFile ?: return
-//
-//        if (!virtualFile.name.endsWith(".ngx")) return
-//
-//        val hostText = host.text
-//        val hostRange = host.textRange
-//
-//        Logger.warn("Injecting body  ${hostText}")
-//
-//        injectLanguage(registrar, host, hostText, "<ng-component-template>", "</ng-component-template>", HTMLLanguage.INSTANCE, hostRange)
-////        injectLanguage(registrar, host, hostText, "<ng-component-style>", "</ng-component-style>", CssLanguage, hostRange)
-//    }
-//
-//    private fun injectLanguage(
-//        registrar: MultiHostRegistrar,
-//        host: PsiLanguageInjectionHost,
-//        hostText: String,
-//        startMarker: String,
-//        endMarker: String?,
-//        language: Language,
-//        hostRange: TextRange
-//    ) {
-//
-//
-//        val startOffset = hostText.indexOf(startMarker)
-//        val endOffset = endMarker?.let { hostText.indexOf(it, startOffset) } ?: hostText.length
-//
-//        Logger.warn("@@@@@@@@@@ startOffset: $startOffset, endOffset: $endOffset")
-//
-//
-//        if (startOffset == -1 || endOffset == -1 || startOffset >= endOffset) return
-//
-//        val adjustedStart = hostRange.startOffset + startOffset + startMarker.length
-//        val adjustedEnd = hostRange.startOffset + endOffset
-//
-//        if (adjustedStart >= adjustedEnd || !hostRange.containsRange(adjustedStart, adjustedEnd)) {
-//            Logger.warn("Skipping invalid injection for ${language.displayName}: Range ($adjustedStart, $adjustedEnd) out of host range ${hostRange}")
-//            return
-//        }
-//
-//        val rangeInsideHost = TextRange(adjustedStart, adjustedEnd)
-//
-//        Logger.warn("@@@@@@@@@@ Injecting ${language.displayName} from $rangeInsideHost in host range ${hostRange}")
-//
-//        registrar.startInjecting(language)
-//            .addPlace(null, null, host, rangeInsideHost)
-//            .doneInjecting()
-//    }
-//}
-//
-//
+//[TOML, ThymeleafExpressions, JPAQL, VueTS, InjectedFreeMarker, Angular181Html, DB2_IS, ECMAScript 6, BigQuery, ThymeleafTemplatesExpressions, Cockroach, ThymeleafIterateExpressions, JShellLanguage, prototext, JSRegexp, XPath, , SQLite, Flow JS, EJBQL, ThymeleafTemplatesFragmentExpressions, CSS, HQL, Angular181Svg, MySQL based, SQL92, H2, UastContextLanguage, EQL, HSQLDB, Oracle, Properties, TEXT, Angular2Svg, MongoDB-JSON, ClickHouse, Markdown, MongoJSExt, Vue, AZURE, SASS, Vertica, FTL], JVM, MongoJS, IgnoreLang, JSUnicodeRegexp, HiveQL, XsdRegExp, XML, MicronautDataQL, DB2_ZOS, yaml, OracleSqlPlus, Greenplum, Angular2Html, Exasol, JSP, ThymeleafUrlExpressions, UAST, DTD, FTL>, JQL, Snowflake, Manifest, SVG, Angular17Svg, SQLDateTime, HtmlCompatible, Lombok.Config, GitExclude, PostCSS, Redis, TSQL, JSPX, CouchbaseQuery, SPI, JSON, EditorConfig, HTTP Request, JavaScript, SparkSQL, Qute, Metadata JSON, HttpClientHandlerJavaScriptDialect, VueJS, XHTML, SCSS, HTML, kotlin, Declarative, Groovy, protobuf, JAVA, FTL, textmate, VueExpr, Shell Script, Dockerfile, GenericSQL, TypeScript, Redshift, MariaDB, GithubExpressionLanguage, Derby, LESS, JSON Lines, SpEL, Ngx, AOPTarget, SpringDataQL, DockerIgnore, EL, SQL, MongoDB, ThymeleafSpringSecurityExtras, Spring-MongoDB-JSON, JSONPath, JakartaDataQL, XPath2, HgIgnore, Cookie, RELAX-NG, protobase, DB2, PointcutExpression, YouTrack, Angular17Html, Dynamo, GitIgnore, VTL, Micronaut-MongoDB-JSON, RegExp, Angular2, CassandraQL, JQuery-CSS, MicronautEL, TypeScript JSX, CronExp, NetSuite, MySQL, ECMA Script Level 4, Sybase, JSON5, PostgreSQL, KND]

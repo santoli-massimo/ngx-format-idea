@@ -14,7 +14,6 @@ import com.intellij.pom.Navigatable
 class AngularComponentNode(
     project: Project?,
     private val virtualFile: NgxVirtualFile,
-//    private val virtualFile: VirtualFile,
     private val relatedFiles: List<VirtualFile>,
     viewSettings: ViewSettings,
 //) : ProjectViewNode<VirtualFile>(project, virtualFile, viewSettings) {
