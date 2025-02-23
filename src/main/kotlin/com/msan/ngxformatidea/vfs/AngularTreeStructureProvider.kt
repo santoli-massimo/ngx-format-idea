@@ -45,8 +45,6 @@ class AngularTreeStructureProvider(private val project: Project) : TreeStructure
             )
         }
 
-
-
         return newChildren
     }
 }

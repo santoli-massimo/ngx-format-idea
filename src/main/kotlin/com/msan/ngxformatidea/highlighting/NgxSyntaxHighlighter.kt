@@ -10,8 +10,6 @@ import com.msan.ngxformatidea.psi.NgxTypes
 import com.msan.ngxformatidea.utils.Logger
 
 
-
-
 class NgxSyntaxHighlighter : SyntaxHighlighterBase() {
     override fun getHighlightingLexer(): Lexer { return NgxLexerAdapter() }
 
@@ -19,17 +17,20 @@ class NgxSyntaxHighlighter : SyntaxHighlighterBase() {
 //        Logger.warn("tokenType: $tokenType")
 
         return when (tokenType) {
-            NgxTypes.STYLE_START -> arrayOf(STYLE_START)
-            NgxTypes.STYLE_END -> arrayOf(STYLE_END)
-            NgxTypes.STYLE -> arrayOf(STYLE)
+            NgxTypes.STYLE_BLOCK -> pack(STYLE_BLOCK)
+//            NgxTypes.STYLE_START -> pack(STYLE_START)
+//            NgxTypes.STYLE_END -> pack(STYLE_END)
+//            NgxTypes.STYLE -> pack(STYLE)
 
-            NgxTypes.TEMPLATE_START -> arrayOf(TEMPLATE_START)
-            NgxTypes.TEMPLATE_END -> arrayOf(TEMPLATE_END)
-            NgxTypes.TEMPLATE -> arrayOf(TEMPLATE)
+            NgxTypes.TEMPLATE_BLOCK -> pack(TEMPLATE_BLOCK)
+//            NgxTypes.TEMPLATE_START -> pack(TEMPLATE_START)
+//            NgxTypes.TEMPLATE_END -> pack(TEMPLATE_END)
+//            NgxTypes.TEMPLATE -> pack(TEMPLATE)
 
-            NgxTypes.COMPONENT_START -> arrayOf(COMPONENT_START)
-            NgxTypes.COMPONENT_END -> arrayOf(COMPONENT_END)
-            NgxTypes.COMPONENT -> arrayOf(COMPONENT)
+            NgxTypes.COMPONENT_BLOCK -> pack(COMPONENT_BLOCK)
+//            NgxTypes.COMPONENT_START -> pack(COMPONENT_START)
+//            NgxTypes.COMPONENT_END -> pack(COMPONENT_END)
+//            NgxTypes.COMPONENT -> pack(COMPONENT)
             else -> emptyArray()
         }
     }
@@ -49,6 +50,10 @@ class NgxSyntaxHighlighter : SyntaxHighlighterBase() {
             "TEMPLATE",
             DefaultLanguageHighlighterColors.KEYWORD
         )
+        val TEMPLATE_BLOCK: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
+            "TEMPLATE_BLOCK",
+            DefaultLanguageHighlighterColors.KEYWORD
+        )
 
         val STYLE_START: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "STYLE_START",
@@ -65,6 +70,11 @@ class NgxSyntaxHighlighter : SyntaxHighlighterBase() {
             DefaultLanguageHighlighterColors.STRING
         )
 
+        val STYLE_BLOCK: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
+            "STYLE_BLOCK",
+            DefaultLanguageHighlighterColors.STRING
+        )
+
         val COMPONENT_START: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "COMPONENT_START",
             DefaultLanguageHighlighterColors.INSTANCE_METHOD
@@ -75,6 +85,11 @@ class NgxSyntaxHighlighter : SyntaxHighlighterBase() {
         )
         val COMPONENT: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "COMPONENT",
+            DefaultLanguageHighlighterColors.INSTANCE_METHOD
+        )
+
+        val COMPONENT_BLOCK: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
+            "COMPONENT_BLOCK",
             DefaultLanguageHighlighterColors.INSTANCE_METHOD
         )
     }

@@ -32,17 +32,8 @@ class AngularComponentNode(
         presentation.presentableText = virtualFile.name
     }
 
-//
-//    override fun contains(file: VirtualFile): Boolean {
-//        TODO("Not yet implemented")
-//    }
-//
     override fun canNavigate(): Boolean = true
     override fun canNavigateToSource(): Boolean = true
-
-//    override fun canRepresent(element: Any?): Boolean {
-//        return element == virtualFile
-//    }
 
     override fun navigate(requestFocus: Boolean) {
         logger.warn("OPEN NG FILE to ${virtualFile.name}")

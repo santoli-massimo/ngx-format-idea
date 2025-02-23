@@ -14,19 +14,21 @@
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+        <p>Ngx-format-idea is a plugin that provides support for the Ngx file format.</p>
+        <p>Ngx is a file format used by the Ngx framework.</p>
   ]]></description>
 
-    <!-- Product and plugin compatibility requirements.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
-    <depends>com.intellij.modules.platform</depends>
+    <!-- Product and plugin compatibility requirements. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>JavaScript</depends>
+    <depends>com.intellij.modules.platform</depends>
+    <depends>HtmlTools</depends>
+    <depends>AngularJS</depends>
 
 
-    <!-- Extension points defined by the plugin.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
+    <!-- Extension points defined by the plugin. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
+        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxMultiHostInjector"/>
+
         <!-- VFS-->
         <fileType
                 name="Ngx File"
@@ -40,9 +42,9 @@
         <!-- LANG-->
         <lang.parserDefinition language="Ngx" implementationClass="com.msan.ngxformatidea.parser.NgxParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Ngx" implementationClass="com.msan.ngxformatidea.highlighting.NgxSyntaxHighlighterFactory"/>
-        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxMultiHostInjector"/>
+        <fileIconProvider implementation="com.msan.ngxformatidea.utils.NgxFileIconProvider"/>
 
-        <lang.fileViewProviderFactory language="Ngx" implementationClass="com.msan.ngxformatidea.language.NgxFileViewProviderFactory"/>
-        <!--        <fileIconProvider implementation="com.msan.ngxformatidea.utils.NgxFileIconProvider"/>-->
+
+        <!--        <lang.fileViewProviderFactory language="Ngx" implementationClass="com.msan.ngxformatidea.language.NgxFileViewProviderFactory"/>-->
     </extensions>
 </idea-plugin>

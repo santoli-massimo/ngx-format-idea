@@ -36,28 +36,15 @@ public class NgxParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // COMPONENT_START (COMPONENT_CONTENT)* COMPONENT_END
+  // COMPONENT_BLOCK
   public static boolean component(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "component")) return false;
-    if (!nextTokenIs(builder_, COMPONENT_START)) return false;
+    if (!nextTokenIs(builder_, COMPONENT_BLOCK)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, COMPONENT_START);
-    result_ = result_ && component_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, COMPONENT_END);
+    result_ = consumeToken(builder_, COMPONENT_BLOCK);
     exit_section_(builder_, marker_, COMPONENT, result_);
     return result_;
-  }
-
-  // (COMPONENT_CONTENT)*
-  private static boolean component_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "component_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!consumeToken(builder_, COMPONENT_CONTENT)) break;
-      if (!empty_element_parsed_guard_(builder_, "component_1", pos_)) break;
-    }
-    return true;
   }
 
   /* ********************************************************** */
@@ -84,65 +71,26 @@ public class NgxParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // STYLE_START (STYLE_CONTENT)* STYLE_END
+  // STYLE_BLOCK
   public static boolean style(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "style")) return false;
-    if (!nextTokenIs(builder_, STYLE_START)) return false;
+    if (!nextTokenIs(builder_, STYLE_BLOCK)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, STYLE_START);
-    result_ = result_ && style_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, STYLE_END);
+    result_ = consumeToken(builder_, STYLE_BLOCK);
     exit_section_(builder_, marker_, STYLE, result_);
     return result_;
   }
 
-  // (STYLE_CONTENT)*
-  private static boolean style_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "style_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!consumeToken(builder_, STYLE_CONTENT)) break;
-      if (!empty_element_parsed_guard_(builder_, "style_1", pos_)) break;
-    }
-    return true;
-  }
-
   /* ********************************************************** */
-  // TEMPLATE_START (TEMPLATE_CONTENT)* TEMPLATE_END
+  // TEMPLATE_BLOCK
   public static boolean template(PsiBuilder builder_, int level_) {
     if (!recursion_guard_(builder_, level_, "template")) return false;
-    if (!nextTokenIs(builder_, TEMPLATE_START)) return false;
+    if (!nextTokenIs(builder_, TEMPLATE_BLOCK)) return false;
     boolean result_;
     Marker marker_ = enter_section_(builder_);
-    result_ = consumeToken(builder_, TEMPLATE_START);
-    result_ = result_ && template_1(builder_, level_ + 1);
-    result_ = result_ && consumeToken(builder_, TEMPLATE_END);
+    result_ = consumeToken(builder_, TEMPLATE_BLOCK);
     exit_section_(builder_, marker_, TEMPLATE, result_);
-    return result_;
-  }
-
-  // (TEMPLATE_CONTENT)*
-  private static boolean template_1(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "template_1")) return false;
-    while (true) {
-      int pos_ = current_position_(builder_);
-      if (!consumeToken(builder_, TEMPLATE_CONTENT)) break;
-      if (!empty_element_parsed_guard_(builder_, "template_1", pos_)) break;
-    }
-    return true;
-  }
-
-  /* ********************************************************** */
-  // TS_EXPRESSION | TS_STATEMENT
-  public static boolean ts_element(PsiBuilder builder_, int level_) {
-    if (!recursion_guard_(builder_, level_, "ts_element")) return false;
-    if (!nextTokenIs(builder_, "<ts element>", TS_EXPRESSION, TS_STATEMENT)) return false;
-    boolean result_;
-    Marker marker_ = enter_section_(builder_, level_, _NONE_, TS_ELEMENT, "<ts element>");
-    result_ = consumeToken(builder_, TS_EXPRESSION);
-    if (!result_) result_ = consumeToken(builder_, TS_STATEMENT);
-    exit_section_(builder_, level_, marker_, result_, false, null);
     return result_;
   }
 

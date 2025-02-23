@@ -1,0 +1,12 @@
+<ivy-module version="2.0">
+  <info organisation="bundledPlugin" module="JSIntentionPowerPack" revision="IU-243.24978.46"/>
+  <configurations>
+    <conf name="default" visibility="public"/>
+  </configurations>
+  <publications>
+    <artifact name="javascript-intentions" ext="jar" conf="default" url="plugins/javascript-intentions/lib"/>
+  </publications>
+  <dependencies>
+    <dependency org="bundledPlugin" name="JavaScript" rev="IU-243.24978.46"/>
+  </dependencies>
+</ivy-module>

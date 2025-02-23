@@ -19,10 +19,6 @@ public class NgxVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitTsElement(@NotNull NgxTsElement o) {
-    visitPsiElement(o);
-  }
-
   public void visitPsiElement(@NotNull PsiElement o) {
     visitElement(o);
   }

@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.msan.ngxformatidea.psi.NgxTypes.*;
 import com.msan.ngxformatidea.psi.*;
 
-public class NgxStyleImpl extends NgxComponentMixin implements NgxStyle {
+public class NgxStyleImpl extends NgxStyleMixin implements NgxStyle {
 
   public NgxStyleImpl(ASTNode node) {
     super(node);

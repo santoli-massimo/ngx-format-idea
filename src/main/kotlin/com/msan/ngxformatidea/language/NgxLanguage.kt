@@ -1,12 +1,12 @@
 package com.msan.ngxformatidea.language
 
 import com.intellij.lang.Language;
-import com.intellij.lang.javascript.JavaScriptSupportLoader
+import com.intellij.lang.javascript.JavaScriptSupportLoader.TYPESCRIPT
 
 //val typeScriptLanguage: Language = Language.findLanguageByID("TypeScript") ?: Language.ANY
 
 class NgxLanguage private constructor() : Language(
-//    JavaScriptSupportLoader.TYPESCRIPT,
+//    TYPESCRIPT,
     "Ngx"
 ) {
     companion object {

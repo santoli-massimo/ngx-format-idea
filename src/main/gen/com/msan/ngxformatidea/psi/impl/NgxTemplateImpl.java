@@ -10,7 +10,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import static com.msan.ngxformatidea.psi.NgxTypes.*;
 import com.msan.ngxformatidea.psi.*;
 
-public class NgxTemplateImpl extends NgxComponentMixin implements NgxTemplate {
+public class NgxTemplateImpl extends NgxTemplateMixin implements NgxTemplate {
 
   public NgxTemplateImpl(ASTNode node) {
     super(node);

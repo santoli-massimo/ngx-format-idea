@@ -17,17 +17,14 @@
   ]
 }
 
+//file ::= (TEMPLATE_START | STYLE_START | COMPONENT_START | WHITE_SPACE)*
+
+
+//template ::= TEMPLATE_START (TEMPLATE_CONTENT)* TEMPLATE_END { mixin="com.msan.ngxformatidea.psi.impl.NgxComponentMixin" }
+//style ::= STYLE_START (STYLE_CONTENT)* STYLE_END { mixin="com.msan.ngxformatidea.psi.impl.NgxComponentMixin" }
+//component ::= COMPONENT_START (COMPONENT_CONTENT)* COMPONENT_END { mixin="com.msan.ngxformatidea.psi.impl.NgxComponentMixin" }
+
 file ::= (template | style | component | WHITE_SPACE)*
-template ::= TEMPLATE_START (TEMPLATE_CONTENT)* TEMPLATE_END { mixin="com.msan.ngxformatidea.psi.impl.NgxComponentMixin" }
-style ::= STYLE_START (STYLE_CONTENT)* STYLE_END { mixin="com.msan.ngxformatidea.psi.impl.NgxComponentMixin" }
-component ::= COMPONENT_START (COMPONENT_CONTENT)* COMPONENT_END { mixin="com.msan.ngxformatidea.psi.impl.NgxComponentMixin" }
-ts_element ::= TS_EXPRESSION | TS_STATEMENT
-
-
-//file ::= (template | style | component | WHITE_SPACE)*
-//template ::= TEMPLATE_START (TEMPLATE_CONTENT)* TEMPLATE_END {pid 1}
-//style ::= STYLE_START (STYLE_CONTENT)* STYLE_END {pid 1}
-//component ::= COMPONENT_START (COMPONENT_CONTENT)* COMPONENT_END {pid 1}
-//ts_element ::= TS_EXPRESSION | TS_STATEMENT
-
-
+template ::= TEMPLATE_BLOCK { mixin="com.msan.ngxformatidea.psi.impl.NgxTemplateMixin" }
+style ::= STYLE_BLOCK { mixin="com.msan.ngxformatidea.psi.impl.NgxStyleMixin" }
+component ::= COMPONENT_BLOCK{ mixin="com.msan.ngxformatidea.psi.impl.NgxComponentMixin" }

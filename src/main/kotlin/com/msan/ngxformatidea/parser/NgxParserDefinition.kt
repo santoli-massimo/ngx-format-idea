@@ -1,6 +1,7 @@
 package com.msan.ngxformatidea.parser
 
 import com.intellij.lang.ASTNode
+import com.intellij.lang.ParserDefinition
 import com.intellij.lang.PsiBuilder
 import com.intellij.lang.PsiParser
 import com.intellij.lang.javascript.dialects.TypeScriptParserDefinition
@@ -25,8 +26,8 @@ import com.msan.ngxformatidea.psi.impl.NgxTemplateImpl
 import com.msan.ngxformatidea.utils.Logger
 
 
-//internal class NgxParserDefinition : ParserDefinition {
-internal class NgxParserDefinition : TypeScriptParserDefinition() {
+internal class NgxParserDefinition : ParserDefinition {
+//internal class NgxParserDefinition : TypeScriptParserDefinition() {
     override fun createLexer(project: Project?): Lexer { return NgxLexerAdapter() }
 
     override fun createParser(project: Project?): PsiParser { return NgxParser() }
@@ -41,19 +42,12 @@ internal class NgxParserDefinition : TypeScriptParserDefinition() {
 
     override fun createFile(viewProvider: FileViewProvider): PsiFile { return NgxFile(viewProvider) }
 
-//    override fun createJSParser(builder: PsiBuilder): JavaScriptParser<*, *, *, *> {
-//        return TypeScriptParser(builder)
-//    }
     override fun createElement(node: ASTNode): PsiElement {
         return when (node.elementType) {
             TEMPLATE -> NgxTemplateImpl(node)
             STYLE -> NgxStyleImpl(node)
             COMPONENT -> NgxComponentImpl(node)
-            else -> createElement(node) // Allow TypeScript elements
-//            else -> {
-//                Logger.warn("Parsing unexpected element: ${node.elementType}")
-//                super.createElement(node) // Allow TypeScript elements
-//            }
+            else -> createElement(node)
         }
     }
 

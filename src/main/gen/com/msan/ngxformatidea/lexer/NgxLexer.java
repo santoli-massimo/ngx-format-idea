@@ -30,7 +30,7 @@ public class NgxLexer implements FlexLexer {
    * l is of the form l = 2*k, k a non negative integer
    */
   private static final int ZZ_LEXSTATE[] = {
-     0,  0,  1,  1,  2,  2,  3, 3
+     0,  0,  1,  1,  1,  1,  1, 1
   };
 
   /**
@@ -98,12 +98,11 @@ public class NgxLexer implements FlexLexer {
   private static final int [] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
-    "\4\0\1\1\1\2\1\1\2\3\2\4\2\5\37\0"+
-    "\1\6\7\0\1\7\6\0\1\10\2\0\1\11\1\12"+
-    "\1\0\1\13";
+    "\2\0\1\1\1\2\1\1\50\0\1\3\14\0\1\4"+
+    "\1\0\1\5";
 
   private static int [] zzUnpackAction() {
-    int [] result = new int[66];
+    int [] result = new int[61];
     int offset = 0;
     offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
@@ -128,18 +127,17 @@ public class NgxLexer implements FlexLexer {
   private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
 
   private static final String ZZ_ROWMAP_PACKED_0 =
-    "\0\0\0\22\0\44\0\66\0\110\0\132\0\154\0\110"+
-    "\0\176\0\110\0\220\0\110\0\242\0\264\0\306\0\330"+
-    "\0\352\0\374\0\u010e\0\u0120\0\u0132\0\u0144\0\u0156\0\u0168"+
-    "\0\u017a\0\u018c\0\u019e\0\u01b0\0\u01c2\0\u01d4\0\u01e6\0\u01f8"+
-    "\0\u020a\0\u021c\0\u022e\0\u0240\0\u0252\0\u0264\0\u0276\0\u0288"+
-    "\0\u029a\0\u02ac\0\u02be\0\u02d0\0\110\0\u02e2\0\u02f4\0\u0306"+
-    "\0\u0318\0\u032a\0\u033c\0\u034e\0\110\0\u0360\0\u0372\0\u0384"+
-    "\0\u0396\0\u03a8\0\u03ba\0\110\0\u03cc\0\u03de\0\110\0\110"+
-    "\0\u03f0\0\110";
+    "\0\0\0\22\0\44\0\66\0\110\0\132\0\154\0\176"+
+    "\0\220\0\242\0\264\0\306\0\330\0\352\0\374\0\u010e"+
+    "\0\u0120\0\u0132\0\u0144\0\u0156\0\u0168\0\u017a\0\u018c\0\u019e"+
+    "\0\u01b0\0\u01c2\0\u01d4\0\u01e6\0\u01f8\0\u020a\0\u021c\0\u022e"+
+    "\0\u0240\0\u0252\0\u0264\0\u0276\0\u0288\0\u029a\0\u02ac\0\u02be"+
+    "\0\u02d0\0\u02e2\0\u02f4\0\u0306\0\u0318\0\u017a\0\u032a\0\u033c"+
+    "\0\u034e\0\u0360\0\u0372\0\u0384\0\u0396\0\u03a8\0\u03ba\0\u03cc"+
+    "\0\u03de\0\u03f0\0\u022e\0\u0402\0\u0240";
 
   private static int [] zzUnpackRowMap() {
-    int [] result = new int[66];
+    int [] result = new int[61];
     int offset = 0;
     offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
     return result;
@@ -162,26 +160,35 @@ public class NgxLexer implements FlexLexer {
   private static final int [] ZZ_TRANS = zzUnpacktrans();
 
   private static final String ZZ_TRANS_PACKED_0 =
-    "\1\5\1\6\1\0\1\6\1\5\1\7\14\5\2\10"+
-    "\2\0\1\10\1\11\14\10\2\12\2\0\1\12\1\13"+
-    "\14\12\2\14\2\0\1\14\1\15\14\14\23\0\1\6"+
-    "\1\0\1\6\26\0\1\16\6\0\1\17\1\20\5\0"+
-    "\1\21\21\0\1\22\21\0\1\23\32\0\1\24\24\0"+
-    "\1\25\12\0\1\26\30\0\1\27\20\0\1\30\12\0"+
-    "\1\31\24\0\1\32\27\0\1\33\13\0\1\34\17\0"+
-    "\1\35\30\0\1\36\16\0\1\37\22\0\1\40\15\0"+
-    "\1\41\25\0\1\42\16\0\1\43\27\0\1\44\13\0"+
-    "\1\45\23\0\1\46\15\0\1\47\22\0\1\50\25\0"+
-    "\1\51\15\0\1\52\25\0\1\53\17\0\1\54\13\0"+
-    "\1\55\22\0\1\56\24\0\1\57\20\0\1\60\25\0"+
-    "\1\61\15\0\1\62\30\0\1\63\10\0\1\64\20\0"+
-    "\1\65\27\0\1\66\21\0\1\67\16\0\1\70\30\0"+
-    "\1\71\12\0\1\72\30\0\1\73\7\0\1\74\24\0"+
-    "\1\75\24\0\1\76\13\0\1\77\21\0\1\100\33\0"+
-    "\1\101\7\0\1\102\13\0";
+    "\1\3\1\4\1\0\1\4\1\3\1\5\16\3\2\0"+
+    "\16\3\23\0\1\4\1\0\1\4\26\0\1\6\6\0"+
+    "\1\7\1\10\16\0\1\11\24\0\1\12\12\0\1\13"+
+    "\23\0\1\14\27\0\1\15\13\0\1\16\24\0\1\17"+
+    "\15\0\1\20\25\0\1\21\20\0\1\22\15\0\1\23"+
+    "\22\0\1\24\23\0\1\25\13\0\1\26\22\0\1\27"+
+    "\23\0\1\30\10\0\5\26\1\31\14\26\20\0\1\32"+
+    "\15\0\1\33\5\0\4\26\1\34\1\31\14\26\11\0"+
+    "\1\35\30\0\1\36\1\0\5\26\1\31\11\26\1\37"+
+    "\2\26\6\0\1\40\21\0\1\41\13\0\5\26\1\31"+
+    "\12\26\1\42\1\26\5\40\1\43\14\40\5\41\1\44"+
+    "\14\41\5\26\1\31\13\26\1\45\4\40\1\46\1\43"+
+    "\14\40\4\41\1\47\1\44\14\41\5\26\1\31\4\26"+
+    "\1\50\7\26\5\40\1\43\12\40\1\51\1\40\5\41"+
+    "\1\44\2\41\1\52\11\41\5\26\1\31\3\26\1\53"+
+    "\10\26\5\40\1\43\3\40\1\54\10\40\5\41\1\44"+
+    "\7\41\1\55\4\41\5\26\1\31\1\56\13\26\5\40"+
+    "\1\43\5\40\1\57\6\40\5\41\1\44\5\41\1\60"+
+    "\6\41\5\40\1\43\10\40\1\61\3\40\5\41\1\44"+
+    "\10\41\1\62\3\41\5\40\1\43\4\40\1\63\7\40"+
+    "\5\41\1\44\7\41\1\64\4\41\5\40\1\43\1\40"+
+    "\1\65\12\40\5\41\1\44\6\41\1\66\5\41\5\40"+
+    "\1\43\12\40\1\67\1\40\5\41\1\44\3\41\1\70"+
+    "\10\41\5\40\1\43\3\40\1\71\10\40\5\41\1\44"+
+    "\6\41\1\72\5\41\5\40\1\43\1\73\13\40\5\41"+
+    "\1\44\12\41\1\74\6\41\1\44\1\75\13\41";
 
   private static int [] zzUnpacktrans() {
-    int [] result = new int[1026];
+    int [] result = new int[1044];
     int offset = 0;
     offset = zzUnpacktrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
@@ -219,12 +226,11 @@ public class NgxLexer implements FlexLexer {
   private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
   private static final String ZZ_ATTRIBUTE_PACKED_0 =
-    "\4\0\1\11\2\1\1\11\1\1\1\11\1\1\1\11"+
-    "\1\1\37\0\1\11\7\0\1\11\6\0\1\11\2\0"+
-    "\2\11\1\0\1\11";
+    "\2\0\1\11\2\1\50\0\1\1\14\0\1\1\1\0"+
+    "\1\1";
 
   private static int [] zzUnpackAttribute() {
-    int [] result = new int[66];
+    int [] result = new int[61];
     int offset = 0;
     offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
     return result;
@@ -542,57 +548,27 @@ public class NgxLexer implements FlexLexer {
             { return TokenType.BAD_CHARACTER;
             }
           // fall through
-          case 12: break;
+          case 6: break;
           case 2:
             { return NgxTypes.WHITE_SPACE;
             }
           // fall through
-          case 13: break;
+          case 7: break;
           case 3:
-            { return NgxTypes.TEMPLATE_CONTENT;
+            { return NgxTypes.STYLE_BLOCK;
             }
           // fall through
-          case 14: break;
+          case 8: break;
           case 4:
-            { return NgxTypes.STYLE_CONTENT;
+            { return NgxTypes.TEMPLATE_BLOCK;
             }
           // fall through
-          case 15: break;
+          case 9: break;
           case 5:
-            { return NgxTypes.COMPONENT_CONTENT;
+            { return NgxTypes.COMPONENT_BLOCK;
             }
           // fall through
-          case 16: break;
-          case 6:
-            { yybegin(STYLE_MODE); return NgxTypes.STYLE_START;
-            }
-          // fall through
-          case 17: break;
-          case 7:
-            { yybegin(YYINITIAL); return NgxTypes.STYLE_END;
-            }
-          // fall through
-          case 18: break;
-          case 8:
-            { yybegin(TEMPLATE_MODE); return NgxTypes.TEMPLATE_START;
-            }
-          // fall through
-          case 19: break;
-          case 9:
-            { yybegin(COMPONENT_MODE); return NgxTypes.COMPONENT_START;
-            }
-          // fall through
-          case 20: break;
-          case 10:
-            { yybegin(YYINITIAL); return NgxTypes.TEMPLATE_END;
-            }
-          // fall through
-          case 21: break;
-          case 11:
-            { yybegin(YYINITIAL); return NgxTypes.COMPONENT_END;
-            }
-          // fall through
-          case 22: break;
+          case 10: break;
           default:
             zzScanError(ZZ_NO_MATCH);
           }
