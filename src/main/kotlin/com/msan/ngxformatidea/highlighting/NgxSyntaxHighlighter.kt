@@ -38,59 +38,59 @@ class NgxSyntaxHighlighter : SyntaxHighlighterBase() {
     companion object {
         val TEMPLATE_START: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "TEMPLATE_START",
-            DefaultLanguageHighlighterColors.KEYWORD
+            NgxColors.TEMPLATE
         )
 
         val TEMPLATE_END: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "TEMPLATE_END",
-            DefaultLanguageHighlighterColors.KEYWORD
+            NgxColors.TEMPLATE
         )
 
         val TEMPLATE: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "TEMPLATE",
-            DefaultLanguageHighlighterColors.KEYWORD
+            NgxColors.TEMPLATE
         )
         val TEMPLATE_BLOCK: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "TEMPLATE_BLOCK",
-            DefaultLanguageHighlighterColors.KEYWORD
+            NgxColors.TEMPLATE
         )
 
         val STYLE_START: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "STYLE_START",
-            DefaultLanguageHighlighterColors.STRING
+            NgxColors.STYLE
         )
 
         val STYLE_END: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "STYLE_END",
-            DefaultLanguageHighlighterColors.STRING
+            NgxColors.STYLE
         )
 
         val STYLE: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "STYLE",
-            DefaultLanguageHighlighterColors.STRING
+            NgxColors.STYLE
         )
 
         val STYLE_BLOCK: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "STYLE_BLOCK",
-            DefaultLanguageHighlighterColors.STRING
+            NgxColors.STYLE
         )
 
         val COMPONENT_START: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "COMPONENT_START",
-            DefaultLanguageHighlighterColors.INSTANCE_METHOD
+            NgxColors.COMPONENT
         )
         val COMPONENT_END: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "COMPONENT_END",
-            DefaultLanguageHighlighterColors.INSTANCE_METHOD
+            NgxColors.COMPONENT
         )
         val COMPONENT: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "COMPONENT",
-            DefaultLanguageHighlighterColors.INSTANCE_METHOD
+            NgxColors.COMPONENT
         )
 
         val COMPONENT_BLOCK: TextAttributesKey = TextAttributesKey.createTextAttributesKey(
             "COMPONENT_BLOCK",
-            DefaultLanguageHighlighterColors.INSTANCE_METHOD
+            NgxColors.COMPONENT
         )
     }
 }

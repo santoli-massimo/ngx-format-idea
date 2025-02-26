@@ -16,7 +16,10 @@ out/
 !**/src/main/**/out/
 !**/src/test/**/out/
 
+.intellijPlatform
+
 *.hprof
+.kotlin
 
 ### Eclipse ###
 .apt_generated

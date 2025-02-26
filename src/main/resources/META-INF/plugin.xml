@@ -37,7 +37,7 @@
                 language="Ngx"
                 extensions="ngx"
         />
-        <treeStructureProvider implementation="com.msan.ngxformatidea.vfs.AngularTreeStructureProvider"/>
+        <treeStructureProvider implementation="com.msan.ngxformatidea.vfs.NgxTreeStructureProvider"/>
 
         <!-- LANG-->
         <lang.parserDefinition language="Ngx" implementationClass="com.msan.ngxformatidea.parser.NgxParserDefinition"/>

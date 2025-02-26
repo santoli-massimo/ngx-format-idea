@@ -11,17 +11,17 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
 
 
-class AngularComponentNode(
+class NgxNode(
     project: Project?,
-    private val virtualFile: NgxVirtualFile,
+//    private val virtualFile: NgxVirtualFile,
+    private val virtualFile: VirtualFile,
     private val relatedFiles: List<VirtualFile>,
     viewSettings: ViewSettings,
-//) : ProjectViewNode<VirtualFile>(project, virtualFile, viewSettings) {
 ) : AbstractTreeNode<VirtualFile>(project, virtualFile) {
-    private val logger = Logger.getInstance(AngularTreeStructureProvider::class.java)
+    private val logger = Logger.getInstance(NgxTreeStructureProvider::class.java)
 
     override fun getChildren(): Collection<AbstractTreeNode<*>> {
-        return relatedFiles.map { file -> AngularComponentChildNode(project, file) }
+        return relatedFiles.map { file -> NgxChildNode(project, file) }
     }
 
     override fun update(presentation: PresentationData) {
@@ -42,9 +42,9 @@ class AngularComponentNode(
 }
 
 
-class AngularComponentChildNode(project: Project?, private val file: VirtualFile): AbstractTreeNode<VirtualFile>(project, file), Navigatable
+class NgxChildNode(project: Project?, private val file: VirtualFile): AbstractTreeNode<VirtualFile>(project, file), Navigatable
 {
-    private val logger = Logger.getInstance(AngularTreeStructureProvider::class.java)
+    private val logger = Logger.getInstance(NgxTreeStructureProvider::class.java)
 
     override fun getChildren(): Collection<AbstractTreeNode<*>> = emptyList()
 
