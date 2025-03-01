@@ -3,13 +3,28 @@ package com.msan.ngxformatidea.vfs
 import com.intellij.ide.projectView.PresentationData
 import com.intellij.ide.projectView.ViewSettings
 import com.intellij.ide.util.treeView.AbstractTreeNode
-import com.intellij.openapi.diagnostic.Logger
+import com.intellij.openapi.fileEditor.FileEditor
 import com.intellij.openapi.fileEditor.FileEditorManager
+import com.intellij.openapi.fileEditor.TextEditor
 import com.intellij.openapi.fileTypes.FileTypeManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.pom.Navigatable
+import com.msan.ngxformatidea.utils.Logger
+import com.msan.ngxformatidea.vfs.listeners.NgxDocumentListener
 
+
+fun openEditor(project: Project, virtualFile: VirtualFile, ngxNode: NgxNode? = null) {
+    val fileEditors = FileEditorManager.getInstance(project).openFile(virtualFile, true)
+    fileEditors.forEach { fileEditor: FileEditor ->
+        val textEditor = fileEditor as? TextEditor ?: return@forEach
+        val editor = textEditor.editor
+//        Logger.warn("editor")
+//        Logger.warn(editor.document.text)
+
+        editor.document.addDocumentListener(NgxDocumentListener(project, ngxNode), fileEditor)
+    }
+}
 
 class NgxNode(
     project: Project?,
@@ -17,11 +32,10 @@ class NgxNode(
     private val virtualFile: VirtualFile,
     private val relatedFiles: List<VirtualFile>,
     viewSettings: ViewSettings,
-) : AbstractTreeNode<VirtualFile>(project, virtualFile) {
-    private val logger = Logger.getInstance(NgxTreeStructureProvider::class.java)
+) : AbstractTreeNode<VirtualFile>(project, virtualFile), Navigatable {
 
     override fun getChildren(): Collection<AbstractTreeNode<*>> {
-        return relatedFiles.map { file -> NgxChildNode(project, file) }
+        return relatedFiles.map { file -> NgxChildNode(project, file, this) }
     }
 
     override fun update(presentation: PresentationData) {
@@ -36,30 +50,34 @@ class NgxNode(
     override fun canNavigateToSource(): Boolean = true
 
     override fun navigate(requestFocus: Boolean) {
-        logger.warn("OPEN NG FILE to ${virtualFile.name}")
-        project?.let { FileEditorManager.getInstance(it).openFile(virtualFile, requestFocus) }
+        openEditor(project, virtualFile)
+    }
+
+    public override fun getVirtualFile(): VirtualFile {
+        return virtualFile
     }
 }
 
 
-class NgxChildNode(project: Project?, private val file: VirtualFile): AbstractTreeNode<VirtualFile>(project, file), Navigatable
-{
-    private val logger = Logger.getInstance(NgxTreeStructureProvider::class.java)
-
+class NgxChildNode(
+    project: Project?,
+    private val virtualFile: VirtualFile,
+    private val ngxNode: NgxNode
+): AbstractTreeNode<VirtualFile>(project, virtualFile), Navigatable {
     override fun getChildren(): Collection<AbstractTreeNode<*>> = emptyList()
 
     override fun update(presentation: PresentationData) {
-        presentation.presentableText = file.name
+//        presentation.presentableText = virtualFile.name
 
-        val fileType = FileTypeManager.getInstance().getFileTypeByFile(file)
+        val fileType = FileTypeManager.getInstance().getFileTypeByFile(virtualFile)
         presentation.setIcon(fileType.icon)
-        presentation.presentableText = file.name
+        presentation.presentableText = virtualFile.name
     }
-
     override fun canNavigate(): Boolean = true
     override fun canNavigateToSource(): Boolean = true
 
     override fun navigate(requestFocus: Boolean) {
-        project?.let { FileEditorManager.getInstance(it).openFile(file, requestFocus) }
+//        val fileEditors = FileEditorManager.getInstance(project).openFile(virtualFile, true)
+        openEditor(project, virtualFile, ngxNode)
     }
 }

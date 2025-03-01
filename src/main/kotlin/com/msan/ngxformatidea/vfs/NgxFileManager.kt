@@ -1,5 +1,6 @@
 package com.msan.ngxformatidea.vfs
 
+import com.msan.ngxformatidea.utils.Logger
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.project.Project
@@ -8,7 +9,10 @@ import com.intellij.openapi.vfs.VirtualFileManager
 import com.msan.ngxformatidea.vfs.listeners.NgxFileListener
 import com.msan.ngxformatidea.vfs.listeners.NgxDocumentListener
 import com.intellij.openapi.editor.EditorFactory
+import com.intellij.openapi.editor.event.EditorFactoryEvent
+import com.intellij.openapi.editor.event.EditorFactoryListener
 import com.msan.ngxformatidea.vfs.listeners.OriginalFileListener
+import com.intellij.openapi.fileEditor.FileDocumentManager
 
 
 @Service(Service.Level.PROJECT)
@@ -22,8 +26,8 @@ class NgxFileManager(private val project: Project) {
     init {
         // @TODO: @PERFORMANCE: check for those listeners/subscription removal after the ngx file editor is closed
         // Subscribe to ngx document changes
-        val documentManager = EditorFactory.getInstance()
-        documentManager.eventMulticaster.addDocumentListener(NgxDocumentListener(project), project)
+//        val documentManager = EditorFactory.getInstance()
+//        documentManager.eventMulticaster.addDocumentListener(NgxDocumentListener(project), project)
 
 //        documentManager.eventMulticaster.addDocumentListener(OriginalFileListener(project), project)
 

@@ -27,9 +27,7 @@
 
     <!-- Extension points defined by the plugin. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
-        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxMultiHostInjector"/>
-
-        <!-- VFS-->
+        <!-- VFS -->
         <fileType
                 name="Ngx File"
                 implementationClass="com.msan.ngxformatidea.psi.NgxFileType"
@@ -39,9 +37,12 @@
         />
         <treeStructureProvider implementation="com.msan.ngxformatidea.vfs.NgxTreeStructureProvider"/>
 
-        <!-- LANG-->
+        <!-- LANG -->
+        <multiHostInjector implementation="com.msan.ngxformatidea.injection.NgxMultiHostInjector"/>
         <lang.parserDefinition language="Ngx" implementationClass="com.msan.ngxformatidea.parser.NgxParserDefinition"/>
         <lang.syntaxHighlighterFactory language="Ngx" implementationClass="com.msan.ngxformatidea.highlighting.NgxSyntaxHighlighterFactory"/>
+
+        <!-- ICONS -->
         <fileIconProvider implementation="com.msan.ngxformatidea.utils.NgxFileIconProvider"/>
 
 

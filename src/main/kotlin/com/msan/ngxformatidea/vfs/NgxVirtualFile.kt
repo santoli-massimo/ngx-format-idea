@@ -24,44 +24,41 @@ class NgxVirtualFile(
 
     init {
         isWritable = true
-        updateContent()
+        updateContent(true)
+        Logger.warn("CREATE NGX VIRTUAL FILE: $fileName")
     }
 
     override fun isDirectory(): Boolean = false
 
-    fun updateContent() {
-        if (isUpdating) return
-        isUpdating = true
-
+//    fun updateContent(template: String? = null, style: String? = null, component: String? = null) {
+    fun updateContent(init: Boolean? = false) {
         try {
             val (tsContent, htmlContent, styleContent) = run {
                 var ts = ""
                 var html = ""
                 var style = ""
                 for (file in originalFiles) {
+                    val document = FileDocumentManager.getInstance().getDocument(file) ?: continue
                     when (file.extension) {
-                        "ts"   -> ts = file.contentsToByteArray().toString(Charsets.UTF_8)
-                        "html" -> html = file.contentsToByteArray().toString(Charsets.UTF_8)
-                        "css", "scss" -> style = file.contentsToByteArray().toString(Charsets.UTF_8)
+                        "ts"   -> ts = document.text
+                        "html" -> html = document.text
+                        "css", "scss" -> style = document.text
                     }
-                    if (ts.isNotEmpty() && html.isNotEmpty() && style.isNotEmpty()) break
                 }
                 Triple(ts, html, style)
             }
+            if(init == true) {
+                setContent(null, generateNgxContent(tsContent, htmlContent, styleContent), false)
+            }
+            else updateFileContent(this, generateNgxContent(tsContent, htmlContent, styleContent), project)
 
-            setContent(null, generateNgxContent(tsContent, htmlContent, styleContent), false)
-
-            // ApplicationManager.getApplication().runWriteIntentReadAction<Unit, Throwable> { setContent(null, newContent, false) }
-        } finally {
-            isUpdating = false
+        }
+        catch (e: Exception) {
+            Logger.warn("Error updating content: ${e.message}")
         }
     }
 
     fun updateOriginalFiles() {
-        Logger.warn("Updating original files: $isUpdating")
-        if (isUpdating) return
-        isUpdating = true
-
         try {
             val document = FileDocumentManager.getInstance().getDocument(this)
             val content = document?.text ?: ""
@@ -73,9 +70,9 @@ class NgxVirtualFile(
             ApplicationManager.getApplication().runWriteAction {
                 originalFiles.forEach { file ->
                     when (file.extension) {
-                        "html" -> updateFileContent(file, templateContent)
-                        "css", "scss" -> updateFileContent(file, styleContent)
-                        "ts" -> updateFileContent(file, componentContent)
+                        "html" -> updateFileContent(file, templateContent, project)
+                        "css", "scss" -> updateFileContent(file, styleContent, project)
+                        "ts" -> updateFileContent(file, componentContent, project)
                     }
                 }
             }
@@ -83,7 +80,6 @@ class NgxVirtualFile(
         catch (e: Exception) {
             Logger.warn("Error updating original files: ${e.message}")
         }
-        finally { isUpdating = false }
     }
 
     private fun extractContent(content: String, startTag: String, endTag: String): String {
@@ -96,12 +92,13 @@ class NgxVirtualFile(
         return ""
     }
 
-    private fun updateFileContent(file: VirtualFile, content: String) {
+    fun updateFileContent(file: VirtualFile, content: String, project: Project) {
         try {
-            val document = FileDocumentManager.getInstance().getDocument(file)
-            if (document != null) {
+            val document = FileDocumentManager.getInstance().getDocument(file) ?: return
+            if (document.text != content) {
                 document.setText(content)
                 PsiDocumentManager.getInstance(project).commitDocument(document)
+
                 // Following lines are NOT strictly required, but can be useful for other ide parts or third-party plugins
                 FileDocumentManager.getInstance().saveDocument(document)
                 file.refresh(true, false)
