@@ -6,52 +6,31 @@ import com.intellij.openapi.editor.event.DocumentListener
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
+import com.intellij.psi.PsiManager
+import com.intellij.psi.util.PsiTreeUtil
+import com.msan.ngxformatidea.psi.impl.NgxTemplateImpl
 import com.msan.ngxformatidea.utils.Logger
 import com.msan.ngxformatidea.vfs.NgxNode
 import com.msan.ngxformatidea.vfs.NgxVirtualFile
 
 
-class NgxDocumentListener(private val project: Project, private val ngxNode: NgxNode? = null) : DocumentListener {
+class NgxDocumentListener(private val ngxFile: NgxVirtualFile) : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
-        val document = event.document
+        ngxFile.updateOriginalFiles()
+    }
+}
 
-//        Logger.warn("------ DOCUMENT changed: ${documentCurrent.text}")
-
-        ApplicationManager.getApplication().invokeLater {
-            FileDocumentManager.getInstance().getFile(document)?.let { file ->
-//                if (file is NgxVirtualFile && !file.isUpdating) {
-                if (file is NgxVirtualFile) {
-                    Logger.warn("------ NGX FILE changed: evaluate ${file.name}")
-                    file.updateOriginalFiles()
-                }
-                else{
-//                    Logger.warn("------ RELATED FILE CHANGE: evaluate ${file}")
-                    ApplicationManager.getApplication().runWriteAction {
-                        // your code to modify file content
-                        if(ngxNode != null) updateNgxFile(file, document.text, project, ngxNode)
-                    }
-
-                }
-            }
-
-        }
+class NgxChildDocumentListener(
+    private val ngxFile: NgxVirtualFile,
+    private val childFile: VirtualFile
+) : DocumentListener {
+    override fun documentChanged(event: DocumentEvent) {
+        ApplicationManager.getApplication().invokeLater({
+            ngxFile.onChildFileChanged(childFile)
+        })
     }
 
-    fun updateNgxFile(file: VirtualFile, content: String, project: Project, ngxNode: NgxNode) {
-        try {
-            val parentFile = ngxNode.virtualFile as NgxVirtualFile
-
-            Logger.warn("------ RELATED FILE CHANGE: evaluate ${file}")
-            Logger.warn("------ OLD CONTENT: ${content}")
-            Logger.warn("------ CURRENT CONTENT: ${parentFile.content}")
-
-            if (!parentFile.content.contains(content)) {
-                Logger.warn("------ RELATED FILE UPDATING ${file}")
-                parentFile.updateContent()
-            }
-
-        } catch (e: Exception) {
-            Logger.warn("Error updating file content: ${e.message}")
-        }
+    fun removeMarkers(content: String, startMarker: String, endMarker: String): String {
+        return content.replace(startMarker, "").replace(endMarker, "").trim()
     }
 }

@@ -15,5 +15,6 @@ abstract class NgxTemplateMixin(node: ASTNode) : NgxPsiInjectionHostMixin(node) 
     override val fileName: String = "template.html"
     override val startMarker: String = "[template]"
     override val endMarker: String = "[/template]"
+
 }
 

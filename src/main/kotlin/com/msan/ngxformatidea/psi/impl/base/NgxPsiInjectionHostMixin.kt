@@ -46,4 +46,16 @@ abstract class NgxPsiInjectionHostMixin(node: ASTNode) : ASTWrapperPsiElement(no
             override fun isOneLine(): Boolean = false
         }
     }
+
+    fun contentWithoutMarkers(): String{
+        return this.text.replace(startMarker, "").replace(endMarker, "").trim()
+    }
+
+    fun addMarkers(content: String): String {
+        return """
+            |${startMarker}
+            |${content.trim().prependIndent("\t")}}
+            |${endMarker}
+        """.trimMargin()
+    }
 }

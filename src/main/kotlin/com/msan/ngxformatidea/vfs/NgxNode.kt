@@ -16,14 +16,11 @@ import com.msan.ngxformatidea.vfs.listeners.NgxDocumentListener
 
 fun openEditor(project: Project, virtualFile: VirtualFile, ngxNode: NgxNode? = null) {
     val fileEditors = FileEditorManager.getInstance(project).openFile(virtualFile, true)
-    fileEditors.forEach { fileEditor: FileEditor ->
-        val textEditor = fileEditor as? TextEditor ?: return@forEach
-        val editor = textEditor.editor
-//        Logger.warn("editor")
-//        Logger.warn(editor.document.text)
-
-        editor.document.addDocumentListener(NgxDocumentListener(project, ngxNode), fileEditor)
-    }
+//    fileEditors.forEach { fileEditor: FileEditor ->
+//        val textEditor = fileEditor as? TextEditor ?: return@forEach
+//        val editor = textEditor.editor
+//        editor.document.addDocumentListener(NgxDocumentListener(project, ngxNode), fileEditor)
+//    }
 }
 
 class NgxNode(
@@ -58,7 +55,6 @@ class NgxNode(
     }
 }
 
-
 class NgxChildNode(
     project: Project?,
     private val virtualFile: VirtualFile,
@@ -68,7 +64,6 @@ class NgxChildNode(
 
     override fun update(presentation: PresentationData) {
 //        presentation.presentableText = virtualFile.name
-
         val fileType = FileTypeManager.getInstance().getFileTypeByFile(virtualFile)
         presentation.setIcon(fileType.icon)
         presentation.presentableText = virtualFile.name
@@ -79,5 +74,29 @@ class NgxChildNode(
     override fun navigate(requestFocus: Boolean) {
 //        val fileEditors = FileEditorManager.getInstance(project).openFile(virtualFile, true)
         openEditor(project, virtualFile, ngxNode)
+        Logger.debug("OPEN CHILD NODE: ${virtualFile.name}")
     }
 }
+
+//class NgxChildNode(
+//    project: Project?,
+//    private val virtualFile: VirtualFile,
+//    private val ngxNode: NgxNode
+//): AbstractTreeNode<VirtualFile>(project, virtualFile), Navigatable {
+//    override fun getChildren(): Collection<AbstractTreeNode<*>> = emptyList()
+//
+//    override fun update(presentation: PresentationData) {
+////        presentation.presentableText = virtualFile.name
+//        val fileType = FileTypeManager.getInstance().getFileTypeByFile(virtualFile)
+//        presentation.setIcon(fileType.icon)
+//        presentation.presentableText = virtualFile.name
+//    }
+//    override fun canNavigate(): Boolean = true
+//    override fun canNavigateToSource(): Boolean = true
+//
+//    override fun navigate(requestFocus: Boolean) {
+////        val fileEditors = FileEditorManager.getInstance(project).openFile(virtualFile, true)
+//        openEditor(project, virtualFile, ngxNode)
+//        Logger.debug("OPEN CHILD NODE: ${virtualFile.name}")
+//    }
+//}

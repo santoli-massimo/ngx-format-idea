@@ -20,8 +20,8 @@ repositories {
 
 dependencies {
     intellijPlatform {
-//        intellijIdeaUltimate("2024.3.3")
-        local("/Users/massimo/Applications/IntelliJ IDEA Ultimate.app")
+        intellijIdeaUltimate("2024.3.3")
+//        local("/Users/massimo/Applications/IntelliJ IDEA Ultimate.app")
         bundledPlugins(
             "com.intellij.java",
             "com.intellij.properties",
@@ -103,5 +103,6 @@ tasks {
     runIde {
 //        local(file("/Users/massimo/Applications/IntelliJ IDEA Ultimate.app/Contents"))
         dependsOn(generateParser)
+        jvmArgs("-Didea.log.level=DEBUG")
     }
 }
