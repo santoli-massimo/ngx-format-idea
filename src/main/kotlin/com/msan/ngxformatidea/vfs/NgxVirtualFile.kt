@@ -2,31 +2,28 @@ package com.msan.ngxformatidea.vfs
 
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.editor.EditorFactory
-import com.intellij.openapi.editor.event.EditorFactoryEvent
-import com.intellij.openapi.editor.event.EditorFactoryListener
+import com.intellij.openapi.application.ModalityState
+import com.intellij.openapi.command.WriteCommandAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.fileEditor.FileEditorManagerListener
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiFile
 import com.intellij.psi.PsiManager
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.testFramework.LightVirtualFile
 import com.msan.ngxformatidea.language.NgxLanguage
-import com.msan.ngxformatidea.utils.Logger
-import com.intellij.openapi.util.Disposer
-import com.msan.ngxformatidea.vfs.listeners.NgxDocumentListener
-import com.intellij.openapi.application.ModalityState
-import com.intellij.psi.PsiElementFactory
-import com.intellij.psi.util.PsiTreeUtil
-import com.msan.ngxformatidea.psi.NgxTemplate
-import com.msan.ngxformatidea.psi.NgxStyle
-import com.msan.ngxformatidea.psi.NgxComponent
-import com.msan.ngxformatidea.psi.impl.*
+import com.msan.ngxformatidea.psi.impl.NgxComponentMixin
+import com.msan.ngxformatidea.psi.impl.NgxStyleMixin
+import com.msan.ngxformatidea.psi.impl.NgxTemplateMixin
 import com.msan.ngxformatidea.psi.impl.base.NgxPsiInjectionHostMixin
+import com.msan.ngxformatidea.utils.Logger
 import com.msan.ngxformatidea.vfs.listeners.NgxChildDocumentListener
+import com.msan.ngxformatidea.vfs.listeners.NgxDocumentListener
+
 
 class NgxVirtualFile(
     public val originalFiles: List<VirtualFile>,
@@ -56,12 +53,11 @@ class NgxVirtualFile(
                     if(file !is NgxVirtualFile) return
                     val document = FileDocumentManager.getInstance().getDocument(file) ?: return
 
-                    document.addDocumentListener(NgxDocumentListener(file), editorListenersDisposable)
+                    document.addDocumentListener(NgxDocumentListener(file, project), editorListenersDisposable)
 
                     file.originalFiles.forEach{ child ->
-                        Logger.warn("------ NGX CHILD FILE editor created: ${child.name}")
                         val childDocument = FileDocumentManager.getInstance().getDocument(child) ?: return
-                        childDocument.addDocumentListener(NgxChildDocumentListener(file, child), editorListenersDisposable)
+                        childDocument.addDocumentListener(NgxChildDocumentListener(file, child, project), editorListenersDisposable)
                     }
                 }
 
@@ -100,7 +96,7 @@ class NgxVirtualFile(
         val childDocument = FileDocumentManager.getInstance().getDocument(childFile) ?: return
         val psiFile = PsiManager.getInstance(project).findFile(this) ?: return
 
-        val (psiElement: NgxPsiInjectionHostMixin?, content: String) = when (childFile.extension) {
+        val (psiElement: NgxPsiInjectionHostMixin?, contentWithoutTags: String) = when (childFile.extension) {
             "html" -> {
                 val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxTemplateMixin::class.java) as NgxTemplateMixin
                 val content = psiElement.contentWithoutMarkers()
@@ -120,47 +116,68 @@ class NgxVirtualFile(
         }
 
         Logger.warn("------ Child Text: ${childDocument.text}")
-        Logger.warn("------ PSI Text: ${content}")
-
+        Logger.warn("------ PSI Text: ${contentWithoutTags}")
+        Logger.warn("------ Should Change: ${childDocument.text != contentWithoutTags}")
 
         // @TODO: indentation makes the comparison fail
-        if(childDocument.text != content && psiElement != null) {
-            psiElement.updateText(psiElement.addMarkers(content))
-
+        if(childDocument.text != contentWithoutTags && psiElement != null) {
             val document = FileDocumentManager.getInstance().getDocument(this) ?: return
-            PsiDocumentManager.getInstance(project).commitDocument(document)
-            FileDocumentManager.getInstance().saveDocument(document)
-            PsiManager.getInstance(project).dropPsiCaches()
-            this.refresh(true, false)
+
+            WriteCommandAction.runWriteCommandAction(project) {
+                PsiDocumentManager.getInstance(project).commitDocument(document)
+                psiElement.updateContent(childDocument.text)
+
+                FileDocumentManager.getInstance().saveDocument(document)
+                this.refresh(true, false)
+            }
 
             Logger.warn("------ CHANGing: ${childDocument.text !== content}")
         }
 
     }
 
-    fun removeMarkers(content: String? = "", startMarker: String, endMarker: String): String {
-        if(content == "" || content == null) return ""
-        return content.replace(startMarker, "").replace(endMarker, "").trim()
-    }
-
     fun updateOriginalFiles() {
         try {
-            val document = FileDocumentManager.getInstance().getDocument(this)
-            val content = document?.text ?: ""
+            val document = FileDocumentManager.getInstance().getDocument(this) ?: return
+            val psiFile = PsiManager.getInstance(project).findFile(this) ?: return
 
-            val templateContent = extractContent(content, "[template]", "[/template]")
-            val styleContent = extractContent(content, "[style]", "[/style]")
-            val componentContent = extractContent(content, "[component]", "[/component]")
+            WriteCommandAction.runWriteCommandAction(project) {
+                PsiDocumentManager.getInstance(project).commitDocument(document)
 
-            ApplicationManager.getApplication().runWriteAction {
                 originalFiles.forEach { file ->
                     when (file.extension) {
-                        "html" -> updateFileContent(file, templateContent, project)
-                        "css", "scss" -> updateFileContent(file, styleContent, project)
-                        "ts" -> updateFileContent(file, componentContent, project)
+                        "html" -> {
+                            val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxTemplateMixin::class.java) as NgxTemplateMixin ?: return@forEach
+                            updateFileContent(file, psiElement.contentWithoutMarkers(), project)
+                        }
+                        "css", "scss" -> {
+                            val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxStyleMixin::class.java) as NgxStyleMixin ?: return@forEach
+                            updateFileContent(file, psiElement.contentWithoutMarkers(), project)
+                        }
+                        "ts" -> {
+                            val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxComponentMixin::class.java) as NgxComponentMixin ?: return@forEach
+                            updateFileContent(file, psiElement.contentWithoutMarkers(), project)
+                        }
                     }
                 }
             }
+
+//            val document = FileDocumentManager.getInstance().getDocument(this)
+//            val content = document?.text ?: ""
+//
+//            val templateContent = extractContent(content, "[template]", "[/template]")
+//            val styleContent = extractContent(content, "[style]", "[/style]")
+//            val componentContent = extractContent(content, "[component]", "[/component]")
+//
+//            ApplicationManager.getApplication().runWriteAction {
+//                originalFiles.forEach { file ->
+//                    when (file.extension) {
+//                        "html" -> updateFileContent(file, templateContent, project)
+//                        "css", "scss" -> updateFileContent(file, styleContent, project)
+//                        "ts" -> updateFileContent(file, componentContent, project)
+//                    }
+//                }
+//            }
         }
         catch (e: Exception) {
             Logger.warn("Error updating original files: ${e.message}")
@@ -201,17 +218,30 @@ class NgxVirtualFile(
         // because the code indentation in this function affect the final result
         return """
             |[template]
-            |${htmlContent.trim().prependIndent("\t")}
+            |${htmlContent.trim()}
             |[/template]
             |
             |[style]
-            |${styleContent.trim().prependIndent("\t")}
+            |${styleContent.trim()}
             |[/style]
             |
             |[component]
-            |${tsContent.trim().prependIndent("\t")}
+            |${tsContent.trim()}
             |[/component]
         """.trimMargin()
+//        return """
+//            |[template]
+//            |${htmlContent.trim().prependIndent("\t")}
+//            |[/template]
+//            |
+//            |[style]
+//            |${styleContent.trim().prependIndent("\t")}
+//            |[/style]
+//            |
+//            |[component]
+//            |${tsContent.trim().prependIndent("\t")}
+//            |[/component]
+//        """.trimMargin()
     }
 
 }

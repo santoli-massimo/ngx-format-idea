@@ -47,6 +47,11 @@ abstract class NgxPsiInjectionHostMixin(node: ASTNode) : ASTWrapperPsiElement(no
         }
     }
 
+    fun updateContent(content: String) {
+        val contentWithMarkers = addMarkers(content)
+        updateText(contentWithMarkers)
+    }
+
     fun contentWithoutMarkers(): String{
         return this.text.replace(startMarker, "").replace(endMarker, "").trim()
     }
@@ -54,8 +59,14 @@ abstract class NgxPsiInjectionHostMixin(node: ASTNode) : ASTWrapperPsiElement(no
     fun addMarkers(content: String): String {
         return """
             |${startMarker}
-            |${content.trim().prependIndent("\t")}}
+            |${content.trim()}
             |${endMarker}
         """.trimMargin()
+
+//        return """
+//            |${startMarker}
+//            |${content.trim().prependIndent("\t")}}
+//            |${endMarker}
+//        """.trimMargin()
     }
 }
