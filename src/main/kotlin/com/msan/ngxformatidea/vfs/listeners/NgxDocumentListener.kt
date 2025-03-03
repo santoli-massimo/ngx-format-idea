@@ -18,7 +18,9 @@ class NgxDocumentListener(
     private val project: Project
 ) : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
-        ngxFile.updateOriginalFiles()
+        ApplicationManager.getApplication().invokeLater{
+            ngxFile.updateOriginalFiles()
+        }
     }
 }
 
@@ -28,6 +30,9 @@ class NgxChildDocumentListener(
     private val project: Project
 ) : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
-        ngxFile.onChildFileChanged(childFile)
+        ApplicationManager.getApplication().invokeLater{
+            ngxFile.onChildFileChanged(childFile)
+        }
+
     }
 }

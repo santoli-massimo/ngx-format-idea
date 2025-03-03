@@ -77,10 +77,11 @@ class NgxVirtualFile(
                 var html = ""
                 var style = ""
                 for (file in originalFiles) {
+                    val document = FileDocumentManager.getInstance().getDocument(file) ?: return
                     when (file.extension) {
-                        "ts"   -> ts = file.contentsToByteArray().toString(Charsets.UTF_8)
-                        "html" -> html = file.contentsToByteArray().toString(Charsets.UTF_8)
-                        "css", "scss" -> file.contentsToByteArray().toString(Charsets.UTF_8)
+                        "ts" -> ts = document.text
+                        "html" -> html = document.text
+                        "css", "scss" -> style = document.text
                     }
                 }
                 Triple(ts, html, style)
