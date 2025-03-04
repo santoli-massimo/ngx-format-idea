@@ -19,7 +19,7 @@ class NgxDocumentListener(
 ) : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
         ApplicationManager.getApplication().invokeLater{
-            ngxFile.updateOriginalFiles()
+            ngxFile.syncNgxToChild()
         }
     }
 }
@@ -31,8 +31,7 @@ class NgxChildDocumentListener(
 ) : DocumentListener {
     override fun documentChanged(event: DocumentEvent) {
         ApplicationManager.getApplication().invokeLater{
-            ngxFile.onChildFileChanged(childFile)
+            ngxFile.syncChildToNgx(childFile)
         }
-
     }
 }

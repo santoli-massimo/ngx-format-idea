@@ -30,8 +30,7 @@ class NgxVirtualFile(
     public val fileName: String,
     public val project: Project
 ) : LightVirtualFile(fileName, NgxLanguage.INSTANCE, ""){
-
-    public val ngxPsiFile: PsiFile? by lazy { PsiManager.getInstance(project).findFile(this) }
+//    public val ngxPsiFile: PsiFile? by lazy { PsiManager.getInstance(project).findFile(this) }
     private var editorListenersDisposable: Disposable = Disposer.newDisposable("NgxFileCompositeDisposable-$fileName")
 
     fun onEditorClosed(file: VirtualFile) {
@@ -46,7 +45,9 @@ class NgxVirtualFile(
     init {
         isWritable = true
         initContent()
+    }
 
+    private fun addSyncListeners(){
         ApplicationManager.getApplication().invokeLater({
             project.messageBus.connect().subscribe(FileEditorManagerListener.FILE_EDITOR_MANAGER, object : FileEditorManagerListener {
                 override fun fileOpened(source: FileEditorManager, file: VirtualFile) {
@@ -79,135 +80,135 @@ class NgxVirtualFile(
                 for (file in originalFiles) {
                     val document = FileDocumentManager.getInstance().getDocument(file) ?: return
                     when (file.extension) {
-                        "ts" -> ts = document.text
-                        "html" -> html = document.text
-                        "css", "scss" -> style = document.text
+                        "ts" -> ts = document.text.trimEnd()
+                        "html" -> html = document.text.trimEnd()
+                        "css", "scss" -> style = document.text.trimEnd()
                     }
                 }
                 Triple(ts, html, style)
             }
             setContent(null, generateNgxContent(tsContent, htmlContent, styleContent), false)
+
+            addSyncListeners()
         }
         catch (e: Exception) {
             Logger.warn("Error updating content: ${e.message}")
         }
     }
 
-    fun onChildFileChanged(childFile: VirtualFile) {
-        val childDocument = FileDocumentManager.getInstance().getDocument(childFile) ?: return
-        val psiFile = PsiManager.getInstance(project).findFile(this) ?: return
+    fun syncChildToNgx(childFile: VirtualFile) {
 
-        val (psiElement: NgxPsiInjectionHostMixin?, contentWithoutTags: String) = when (childFile.extension) {
+        val ngxDocument = FileDocumentManager.getInstance().getDocument(this) ?: return
+        val childDocument = FileDocumentManager.getInstance().getDocument(childFile) ?: return
+        val ngxPsiFile = PsiManager.getInstance(project).findFile(this) ?: return
+
+        val (ngxPsiElement: NgxPsiInjectionHostMixin?, ngxPsiContent: String) = when (childFile.extension) {
             "html" -> {
-                val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxTemplateMixin::class.java) as NgxTemplateMixin
-                val content = psiElement.contentWithoutMarkers()
-                Pair(psiElement, content)
+                PsiDocumentManager.getInstance(project).commitDocument(ngxDocument)
+                val psiElement = PsiTreeUtil.findChildOfType(ngxPsiFile, NgxTemplateMixin::class.java) as NgxTemplateMixin
+                Pair(psiElement, psiElement.content())
             }
             "css", "scss" -> {
-                val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxStyleMixin::class.java) as NgxStyleMixin
-                val content = psiElement.contentWithoutMarkers()
-                Pair(psiElement, content)
+                PsiDocumentManager.getInstance(project).commitDocument(ngxDocument)
+                val psiElement = PsiTreeUtil.findChildOfType(ngxPsiFile, NgxStyleMixin::class.java) as NgxStyleMixin
+                Pair(psiElement, psiElement.content())
             }
             "ts" -> {
-                val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxComponentMixin::class.java) as NgxComponentMixin
-                val content = psiElement.contentWithoutMarkers()
-                Pair(psiElement, content)
+                PsiDocumentManager.getInstance(project).commitDocument(ngxDocument)
+                val psiElement = PsiTreeUtil.findChildOfType(ngxPsiFile, NgxComponentMixin::class.java) as NgxComponentMixin
+                Pair(psiElement, psiElement.content())
             }
             else -> Pair(null, "")
         }
 
-        Logger.warn("------ Child Text: ${childDocument.text}")
-        Logger.warn("------ PSI Text: ${contentWithoutTags}")
-        Logger.warn("------ Should Change: ${childDocument.text != contentWithoutTags}")
+        if(ngxPsiElement == null) return
 
-        // @TODO: indentation makes the comparison fail
-        if(childDocument.text != contentWithoutTags && psiElement != null) {
-            val document = FileDocumentManager.getInstance().getDocument(this) ?: return
+        // Use of trimEnd() is trimendously important:
+        // if IDE adds extra new lines at the end of the file, to avoid looping in the sync process.
+        if(childDocument.text.trimEnd() != ngxPsiContent.trimEnd()) {
+            Logger.warn("------ syncChildToNgx:")
+            Logger.warn("Ngx text: ${System.lineSeparator()}${ngxPsiContent}");
+            Logger.warn("Child text: ${System.lineSeparator()}${childDocument.text}");
+            Logger.warn("----------------------");
 
-            WriteCommandAction.runWriteCommandAction(project) {
-                PsiDocumentManager.getInstance(project).commitDocument(document)
-                psiElement.updateContent(childDocument.text)
-
-                FileDocumentManager.getInstance().saveDocument(document)
-                this.refresh(true, false)
+            WriteCommandAction.runWriteCommandAction(project){
+                ngxPsiElement.updateContent(childDocument.text.trimEnd())
+                PsiDocumentManager.getInstance(project).commitDocument(ngxDocument)
             }
 
-            Logger.warn("------ CHANGing: ${childDocument.text !== content}")
+//            val childPsiFile = PsiManager.getInstance(project).findFile(childFile) ?: return
+//            WriteCommandAction.runWriteCommandAction(project, "OnChildFileChanged${childFile.name}", "NgxSyncUp", {
+//                ngxPsiElement.updateContent(childDocument.text.trimEnd())
+//                PsiDocumentManager.getInstance(project).commitDocument(ngxDocument)
+//
+////                FileDocumentManager.getInstance().saveDocument(ngxDocument)
+////                this.refresh(true, false)
+//            }, ngxPsiFile, childPsiFile)
         }
 
     }
 
-    fun updateOriginalFiles() {
+    fun syncNgxToChild() {
         try {
-            val document = FileDocumentManager.getInstance().getDocument(this) ?: return
-            val psiFile = PsiManager.getInstance(project).findFile(this) ?: return
+            val ngxDocument = FileDocumentManager.getInstance().getDocument(this) ?: return
+            val ngxPsiFile = PsiManager.getInstance(project).findFile(this) ?: return
 
-            WriteCommandAction.runWriteCommandAction(project) {
-                PsiDocumentManager.getInstance(project).commitDocument(document)
+            PsiDocumentManager.getInstance(project).commitDocument(ngxDocument)
 
-                originalFiles.forEach { file ->
-                    when (file.extension) {
-                        "html" -> {
-                            val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxTemplateMixin::class.java) as NgxTemplateMixin ?: return@forEach
-                            updateFileContent(file, psiElement.contentWithoutMarkers(), project)
-                        }
-                        "css", "scss" -> {
-                            val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxStyleMixin::class.java) as NgxStyleMixin ?: return@forEach
-                            updateFileContent(file, psiElement.contentWithoutMarkers(), project)
-                        }
-                        "ts" -> {
-                            val psiElement = PsiTreeUtil.findChildOfType(psiFile, NgxComponentMixin::class.java) as NgxComponentMixin ?: return@forEach
-                            updateFileContent(file, psiElement.contentWithoutMarkers(), project)
-                        }
+            originalFiles.forEach { file: VirtualFile ->
+                when (file.extension) {
+                    "html" -> {
+                        val psiElement =
+                            PsiTreeUtil.findChildOfType(ngxPsiFile, NgxTemplateMixin::class.java) as NgxTemplateMixin
+                                ?: return@forEach
+                        updateChild(file, psiElement.content())
+                    }
+
+                    "css", "scss" -> {
+                        val psiElement =
+                            PsiTreeUtil.findChildOfType(ngxPsiFile, NgxStyleMixin::class.java) as NgxStyleMixin
+                                ?: return@forEach
+                        updateChild(file, psiElement.content())
+                    }
+
+                    "ts" -> {
+                        val psiElement =
+                            PsiTreeUtil.findChildOfType(ngxPsiFile, NgxComponentMixin::class.java) as NgxComponentMixin
+                                ?: return@forEach
+                        updateChild(file, psiElement.content())
                     }
                 }
             }
-
-//            val document = FileDocumentManager.getInstance().getDocument(this)
-//            val content = document?.text ?: ""
-//
-//            val templateContent = extractContent(content, "[template]", "[/template]")
-//            val styleContent = extractContent(content, "[style]", "[/style]")
-//            val componentContent = extractContent(content, "[component]", "[/component]")
-//
-//            ApplicationManager.getApplication().runWriteAction {
-//                originalFiles.forEach { file ->
-//                    when (file.extension) {
-//                        "html" -> updateFileContent(file, templateContent, project)
-//                        "css", "scss" -> updateFileContent(file, styleContent, project)
-//                        "ts" -> updateFileContent(file, componentContent, project)
-//                    }
-//                }
-//            }
         }
-        catch (e: Exception) {
-            Logger.warn("Error updating original files: ${e.message}")
-        }
+        catch (e: Exception) { Logger.warn("Error updating original files: ${e.message}") }
     }
 
-
-    private fun extractContent(content: String, startTag: String, endTag: String): String {
-        val startIdx = content.indexOf(startTag) + startTag.length
-        val endIdx = content.indexOf(endTag)
-        if (startIdx >= 0 && endIdx >= 0 && startIdx < endIdx) {
-            return content.substring(startIdx, endIdx).trim().lines()
-                .joinToString("\n") { it.removePrefix("\t") }
-        }
-        return ""
-    }
-
-    fun updateFileContent(file: VirtualFile, content: String, project: Project) {
+    private fun updateChild(childVirtualFile: VirtualFile, ngxPsiElementContent: String) {
         try {
-            val document = FileDocumentManager.getInstance().getDocument(file) ?: return
-            if (document.text != content) {
-                document.setText(content)
-                PsiDocumentManager.getInstance(project).commitDocument(document)
+            val childDocument = FileDocumentManager.getInstance().getDocument(childVirtualFile) ?: return
 
-                // Following lines are NOT strictly required, but can be useful for other ide parts or third-party plugins
-                FileDocumentManager.getInstance().saveDocument(document)
-                file.refresh(true, false)
+            if (childDocument.text.trimEnd() != ngxPsiElementContent.trimEnd()) {
+                Logger.warn("++++++ syncNgxToChild")
+                Logger.warn("NgX text: ${System.lineSeparator()}${ngxPsiElementContent}");
+                Logger.warn("Child text: ${System.lineSeparator()}${childDocument.text}");
+                Logger.warn("++++++++++++++++++++");
+
+                WriteCommandAction.runWriteCommandAction(project){
+                    childDocument.setText(ngxPsiElementContent)
+                    PsiDocumentManager.getInstance(project).commitDocument(childDocument)
+                }
+
+//                val psiFile = PsiManager.getInstance(project).findFile(this) ?: return
+//                val psiChildFile = PsiManager.getInstance(project).findFile(childVirtualFile) ?: return
+//                WriteCommandAction.runWriteCommandAction(project, "UpdateOriginalFiles${childVirtualFile.name}", "NgxSyncDown", {
+//                    childDocument.setText(ngxPsiElementContent)
+//                    PsiDocumentManager.getInstance(project).commitDocument(childDocument)
+//
+//                    // Following lines are NOT strictly required, but can be useful for other ide parts or third-party plugins
+////                    FileDocumentManager.getInstance().saveDocument(document)
+////                    file.refresh(true,false)
+//                }, psiFile, psiChildFile)
             }
-
         } catch (e: Exception) {
             Logger.warn("Error updating file content: ${e.message}")
         }
@@ -219,15 +220,15 @@ class NgxVirtualFile(
         // because the code indentation in this function affect the final result
         return """
             |[template]
-            |${htmlContent.trim()}
+            |${htmlContent}
             |[/template]
             |
             |[style]
-            |${styleContent.trim()}
+            |${styleContent}
             |[/style]
             |
             |[component]
-            |${tsContent.trim()}
+            |${tsContent}
             |[/component]
         """.trimMargin()
 //        return """
@@ -244,31 +245,4 @@ class NgxVirtualFile(
 //            |[/component]
 //        """.trimMargin()
     }
-
 }
-
-
-
-//        EditorFactory.getInstance().addEditorFactoryListener(object : EditorFactoryListener {
-//            override fun editorCreated(event: EditorFactoryEvent) {
-//                val editor = event.editor
-//                val file = FileDocumentManager.getInstance().getFile(editor.document)
-//
-//                if(file !is NgxVirtualFile) return
-//                Logger.warn("------ NGX FILE editor created: ${file.name}")
-//                editor.document.addDocumentListener(NgxDocumentListener(project), editorListenersDisposable)
-//
-//                file.originalFiles.forEach{ child ->
-//                    Logger.warn("------ NGX CHILD FILE editor created: ${child.name}")
-//                    val childDocument = FileDocumentManager.getInstance().getDocument(child) ?: return
-//                    childDocument.addDocumentListener(NgxDocumentListener(project), editorListenersDisposable)
-//                }
-//
-//            }
-//            override fun editorReleased(event: EditorFactoryEvent) {
-//                val file = FileDocumentManager.getInstance().getFile(event.editor.document)
-//                if(file !is NgxVirtualFile) return
-//                Logger.warn("------ NGX FILE editor released: ${file.name}")
-//                onEditorClosed(file)
-//            }
-//        }, project)

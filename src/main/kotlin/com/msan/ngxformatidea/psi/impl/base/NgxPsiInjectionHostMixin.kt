@@ -52,14 +52,14 @@ abstract class NgxPsiInjectionHostMixin(node: ASTNode) : ASTWrapperPsiElement(no
         updateText(contentWithMarkers)
     }
 
-    fun contentWithoutMarkers(): String{
+    fun content(): String{
         return this.text.replace(startMarker, "").replace(endMarker, "").trim()
     }
 
     fun addMarkers(content: String): String {
         return """
             |${startMarker}
-            |${content.trim()}
+            |${content}
             |${endMarker}
         """.trimMargin()
 
