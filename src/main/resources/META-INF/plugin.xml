@@ -5,17 +5,20 @@
 
     <!-- Public plugin name should be written in Title Case.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-name -->
-    <name>Ngx-format-idea</name>
+    <name>Ngx Format</name>
 
     <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
-    <vendor email="supporto@yourcompany.com" url="https://www.yourcompanyo.com">YourCompanyo</vendor>
+    <vendor email="santoli.massimo@gmail.com" url="https://github.com/santoli-massimo">santoli-massimo</vendor>
 
     <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
          Simple HTML elements (text formatting, paragraphs, and lists) can be added inside of <![CDATA[ ]]> tag.
          Guidelines: https://plugins.jetbrains.com/docs/marketplace/plugin-overview-page.html#plugin-description -->
     <description><![CDATA[
-        <p>Ngx-format-idea is a plugin that provides support for the Ngx file format.</p>
-        <p>Ngx is a file format used by the Ngx framework.</p>
+        <p>Experimental support for <code>.ngx</code> files — a single-file component format
+        for Angular (template, style and component class in one file, Vue/Svelte style).</p>
+        <p>Provides a custom language (JFlex lexer + Grammar-Kit parser), syntax highlighting,
+        multi-host language injection (HTML/CSS/TypeScript inside blocks) and live sync
+        with the standard Angular component files.</p>
   ]]></description>
 
     <!-- Product and plugin compatibility requirements. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->

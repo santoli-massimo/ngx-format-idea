@@ -20,6 +20,9 @@ out/
 
 *.hprof
 .kotlin
+jflex-*.jar
+idea-flex.skeleton
+backup/
 
 ### Eclipse ###
 .apt_generated
